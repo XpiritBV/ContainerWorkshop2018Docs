@@ -114,7 +114,7 @@ az aks get-credentials --name ContainerWorkshopCluster --resource-group Containe
 ```
 This will dump the configuration to the output window. Copy it in the dialog of ADO. Check the checkbox for `Accept untrusted certificates`. Verify the connection. If all is well, close the dialog by clicking `OK`.
 
-Set the property for Namespace to `$(Namespace)`.
+Set the property for Namespace to `$(namespace)`.
 
 Finally, you are going to add a number of pipeline variables to serve as the replacement values in the deployment manifest and the namespace in the cluster to which will be deployed.
 Here is the list of variables you need to create:
@@ -127,8 +127,11 @@ keyvaultclientid | ca5a0aeb-0eec-49a3-a527-a29e2524fa5b
 keyvaultclientsecret | 45gSC1AZ3lkaSUHpsqFfL/+vddtbshVs1umC0IZWsVY=
 keyvaulturl | https://Containerworkshop.vault.azure.net
 namespace | workshop
+aikey | (empty)
 
-Each of these variable names should be familiar and known to you by now. Set their values. Some of these will be used later.
+Each of these variable names should be familiar and known to you by now. Set their values (except the `aikey`, which remains empty for now). Some of these will be used later.
+
+You can remove the `volumeMounts` and `spec` from the `dep-leaderboardwebapi` deployment, now that the values in it are coming from the pipeline variables and the environment variables. 
 
 Try your release pipeline by creating a new release. Check whether the release is successful and fix any errors. You might want to check the Kubernetes dashboard to see if the cluster deployment succeeded as well. If all is well, you should be able to access the DNS host endpoint of your HTTP application route to view the web application.
 

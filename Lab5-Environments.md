@@ -13,7 +13,7 @@ Compositions are essential to manage the many different combinations of containe
 
 Docker Compose is the tool of choice for this lab to manage compositions of containers. It allows you to use a command-line interface, similar to the Docker CLI, to interact with compositions defined in a `docker-compose.yml` file. There are other tools that allow the creation of compositions, such as the YAML files of Kubernetes. You will use Docker Compose in this lab.
 
-To become familiar with Docker Compose you will first start a container based on a YAML file using `docker-compose.exe`. Create a file named `docker-compose.ci.build.yml` and add the following content to it:
+To become familiar with Docker Compose you will first start a container based on a YAML file using `docker-compose.exe`. Create a file named `docker-compose.ci.build.yml` in the root of your solution and add the following content to it:
 
 ```
 version: '3'
@@ -34,9 +34,9 @@ Start this composition by executing the command from the root of the Visual Stud
 docker-compose -f docker-compose.ci.build.yml up
 ```
 
-The command will 'up' (meaning 'start') the composition and perform a build and publish of the projects in the solution `RetroGaming2017`. 
+The command will 'up' (meaning 'start') the composition and perform a build and publish of the projects in the solution `ContainerWorkshop`. 
 
-Later you will use this composition in your build pipeline to perform the build and publishing of the binaries required to create the container images of the solution.
+You could use this composition in your build pipeline to perform the build and publishing of the binaries required to create the container images of the solution. With the new multi-stage builds in the Dockerfile, you do not need this. 
 
 ## <a name="create"></a>Create compositions for different environments
 
@@ -47,7 +47,7 @@ By default the Docker Compose tooling assumes that your main composition file is
 ```
 docker-compose build
 ```
-It is convenient when your `docker-compose.yml` file is able to build the container images of the composition. This assumes that the source code build has already been done. The build of the container images is typically defined in the `Dockerfile` in the root of the individual projects.
+It is convenient when your `docker-compose.yml` file is able to build the container images of the composition.  The build of the container images is defined in the `Dockerfile` in the root of the individual projects and uses multiple stages to create a clean final image.
 
 Make sure you understand the `docker-compose.yml` contents.
 
@@ -58,11 +58,6 @@ The combination of the two aforementioned compose files is enough to start a com
 ```
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up
 ```
-
-Starting the composition this way might work or fail, depending on whether you have run the ci-build composition before. Think about what happens in each of the cases. 
-
-> ##### Hint
-> You can explore the folder `ContainerWorkshop\obj\Docker` and examine two additional compose files called `docker-compose.vs.debug.g.yml` and `docker-compose.vs.release.g.yml`.
 
 Ideally, your override file for Visual Studio contains the service that are needed when running from the IDE on a development machine.
 
@@ -78,31 +73,6 @@ Enhance the override file by adding the dependencies of the web application on t
 ```
 
 Next, you are going to create a similar compose override for a production situation. In essence the `docker-compose.override.yml` is the development environment override file by convention.
-
-Create a new `docker-compose.production.yml` file in the `docker-compose` project and add the headers for a Docker Compose file:
-
-```
-version: '3'
-
-services:
-```
-
-Unload the Docker Compose project and edit its `.dcproj` file. Add an item to the `ItemGroup` for the YAML files like so:
-```
-<ItemGroup>
-    <None Include="docker-compose.production.yml">
-      <DependentUpon>docker-compose.yml</DependentUpon>
-    </None>
-```
-This will make the production file appear under the `docker-compose.yml` base file.
-
-Edit the `docker-compose.production.yml` file to represent the environment variables and settings for the production situation. You should take a look at the port mappings and base URLs in particular. Use the existing override file as a reference.
-
-Additionally, create a `appsettings.production.json` and change the settings to again reflect the production application settings.
-
-> ##### Static vs. dynamic settings 
-> Which settings can be considered dynamic or static? What happens with the various environment specific settings in the `appsettings.json` file? What type of settings can you store there? Change your file accordingly.
-
 
 ## <a name="change"></a>Working with environments in .NET Core
 

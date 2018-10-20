@@ -137,7 +137,16 @@ Using user secrets is well suited for development scenarios and single host mach
 
 You can store the secrets in a secure way in your cluster. The way this is done depends on the type of orchestrator you have. Kubernetes has its own implementation for secrets. In this final step you are going to create three secrets for the Azure Key Vault connection details, so all secrets are securely stored in a combination of the cluster and the Azure Key Vault.
 
-Open the file `appsettings.secrets.json` and edit the details of the file a Docker CLI and connect to your cluster. In the deployment manifest add the following to the `spec` section:
+Open the file `appsettings.secrets.json` and edit the details of the file a Docker CLI and connect to your cluster. 
+Using a command prompt at the folder with the secrets file:
+```
+kubectl create secret generic secret-appsettings --from-file=./appsettings.secrets.json
+```
+to create a secret containing that file in the default namespace .
+Open the dashboard again and navigate to the `Secrets` section under `Config and Storage`.
+You should see the new secret there. 
+
+In the deployment manifest add the following to the `spec` section:
 ``` yaml
 spec:
   volumes:
@@ -158,8 +167,6 @@ Redeploy the manifest with:
 ```
 kubectl apply -f .\gamingwebapp.k8s-static.yaml
 ```
-Open the dashboard again and navigate to the `Secrets` section under `Config and Storage`.
-You should see the new secret there. 
 
 > Note that the secrets here are only base64 encoded and not protected. You can use Managed Service Identities in Azure to run your nodes in the cluster under a known-identity that has access to the Azure Key Vault. Using this strategy you do not need to maintain any secrets to get access to your Key Vault.
 
