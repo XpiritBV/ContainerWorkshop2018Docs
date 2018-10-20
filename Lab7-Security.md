@@ -167,4 +167,4 @@ You should see the new secret there.
 
 In this lab you have stored the secrets of your application in the Azure Key Vault. You also moved the remaining secrets, containing the details to get access to the vault, in user secrets for development scenarios. In production these secrets are stored as Kubernetes secrets.
 
-Continue with [Lab 8 - VSTS Pipelines](Lab8-VSTSPipelines.md).
+Continue with [Lab 8 - Azure DevOps Pipelines](Lab8-ADOPipelines.md).

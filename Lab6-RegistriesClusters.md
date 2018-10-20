@@ -124,7 +124,7 @@ kubectl config get-contexts
 kubectl config use-context ContainerWorkshopCluster-admin
 ```
 
-Open the [Azure Portal](https://portal.azure.com). Find the resource for your cluster in the resource group `ContainerWorkshop`. Make a note of the properties `HTTP application routing domain` and `API server address`. 
+Open the [Azure Portal](https://portal.azure.com). Find the resource for your cluster in the resource group `ContainerWorkshop`. Make a note of the properties `HTTP application routing domain` and `API server address`.
 
 > Which two important actions can be performed on your cluster from the Azure portal?
 
@@ -143,15 +143,18 @@ You need to make a few changes to the manifest for it to be useable. In particul
 
 In order to be able to pull images from your registry into the cluster, you will need to authenticate against a private registry. If you are using Docker Hub, then this is not required. 
 
-For Azure Container Registry, you will need to create another service principal that will be allowed access to the registry. Execute the following command after having replaced the placeholders with your specific details.
+For Azure Container Registry, you can create another service principal that will be allowed access to the registry. Execute the following command after having replaced the placeholders with your specific details.
 ```az ad sp create-for-rbac --scopes /subscriptions/<your-subscription-id>/resourcegroups/<resource-group-name>/providers/Microsoft.ContainerRegistry/registries/<your-registry-name> --role Contributor --name ContainerWorkshopRegistryPrincipal
 ```
 This command creates a principal that has the Contributor role in the ACR. Take a note of the password that is generated in the output.
-Next, you are going to create a secret in the cluster to hold the credentials for this principal. Later, secrets will be covered in more detail. Execute the next command, again replacing the necessary items.
+
+Next, you are going to create a secret in the cluster to hold the credentials for this principal. The secret is specific to container registries and allows the manifest deployment to use the credentials to pull images for the Kubernetes services. 
 
 ```
-kubectl create secret docker-registry <SECRET_NAME> --docker-server <your-registry-name>.azurecr.io --docker-email <your-email> --docker-username=ContainerWorkshopRegistryPrincipal --docker-password <generated-password>
+kubectl create secret docker-registry pullkey --docker-server <your-registry-name>.azurecr.io --docker-email <your-email> --docker-username=ContainerWorkshopRegistryPrincipal --docker-password <generated-password>
 ```
+
+Later, secrets will be covered in more detail. Execute the next command, again replacing the necessary items.
 
 Save your work and go to the command prompt. Run the command:
 ```
