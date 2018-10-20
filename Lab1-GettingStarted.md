@@ -47,7 +47,7 @@ Clone the repository to your development machine:
 - Clone the Git repository for the workshop files:
 
 ```
-git clone https://github.com/Xpirit/ContainerWorkshop2018.git
+git clone https://github.com/XpiritBV/ContainerWorkshop2018.git
 ```
 - Set an environment variable to the root of the cloned repository from PowerShell:
 ```
