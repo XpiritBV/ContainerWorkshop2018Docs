@@ -53,9 +53,9 @@ Run your application again. Which projects are effectively started? If some proj
 
 > Does the application still work?
 
-Now that the projects are running from a Docker container, the application might not work anymore. If not, try and find out what might be causing the issue. 
+Now that the projects are running from a Docker container, the application is not working anymore. You can try to find what is causing the issue, but do not spend too much time to try to fix it. We will do that next.
 
-> Some things to try:
+> Some things to try if you feel like finding the cause:
 > - Inspect the running and stopped containers
 > - Try to reach the Web API from http://localhost:44369/swagger.
 > - Debug the call from the web page to the API by stepping through the code.
@@ -70,7 +70,11 @@ ports:
 
 > You will learn more on networking later on. For now, notice that the URL is not referring to `localhost` but `leaderboardwebapi` (the name of the Docker container service as defined in the `docker-compose.yml` file).
 
-Change the `LeaderboardWebApiBaseUrl` setting to point to the new endpoint of the Web API with the internal address `http://leaderboard.webapi`. Choose the right place to make that change, considering that you are now running from Docker containers. 
+Change the `LeaderboardWebApiBaseUrl` setting to point to the new endpoint of the Web API with the internal address `http://leaderboard.webapi`. 
+
+> Make sure you use the HTTP endpoint, because hosting an HTTPS endpoint with self-signed certificates in a cluster does not work by default. 
+
+Choose the right place to make that change, considering that you are now running from Docker containers. 
   
 > ##### Hint
 > Changing the setting in the `appsettings.json` file will work and you could choose to do so for now. It does mean that the setting for running without container will not work anymore. So, what other place can you think of that might work? Use that instead if you know, or just change `appsettings.json`.
@@ -79,57 +83,18 @@ Change the `LeaderboardWebApiBaseUrl` setting to point to the new endpoint of th
 gamingwebapp:
   environment:
     - ASPNETCORE_ENVIRONMENT=Development
-    - LeaderboardWebApiBaseUrl=http://leaderboard.webapi
+    - LeaderboardApiOptions:BaseUrl=http://leaderboard.webapi
 ```
 
-Change the IP address of the connection string in the application settings for the Web API to be your local IP address instead of `127.0.0.1`. This is a temporary fix.
+Change the IP address of the connection string in the application settings for the Web API to be your local IP address (of your LAN) instead of `127.0.0.1`. This is a temporary fix.
 
-## <a name="debug"></a>Debugging with Docker container instances
-One of the nicest features of the Docker support in Visual Studio is the debugging support while running container instances. Check out how easy debugging is by stepping through the application like before.
-
-Put a breakpoint at the first statement of the `Index` method in the `HomeController` in the `GamingWebApp` project. Add another breakpoint in the `Get` method of the LeaderboardController in the Web API project.
-Run the application by pressing F5. You should be hitting the breakpoints and jump from one container instance to the other.
-
-## <a name="build"></a>Building container images
-Start a command prompt and use the Docker CLI to check which container instances are running at the moment. There should be three containers related to the application:
-- SQL Server in `sqldocker`.
-- Web application in `dockercompose<id>_gamingwebapp_1`.
-- Web API in `dockercompose<id>_leaderboard.webapi_1`.
-
-where `<id>` is a random unique integer value.
-
-> ##### New container images
-> Which new container images are on your system at the moment? Check your images list with the Docker CLI
-
-Stop your application if necessary. Verify that any container instances of the Web application or Web API are actually stopped. If not, stop them by executing the following command for each of the container instances, except `sqldocker`:
-
-```
-docker kill <container-id>
-```
-
-> Remember that you can use the first unique part of the container ID or its name
-
-Now, try and run the Web application image yourself. Start a container instance.
-```
-docker run -p 8080:80 -it --name webapp gamingwebapp:dev
-```
-Check whether the web application is working. 
-
-You should find that it brings you in a bash shell on Linux.
-```
-root@65e40486ab0f:/app#
-```
-
-Your container image does not contain any of the binaries that make your ASP.NET Core Web application run. Visual Studio uses volume mapping to map the files on your file system into the running container, so it can detect any changes thereby allowing small edits during debug sessions.
-
-> ##### Debug images from Visual Studio
-> Remember that Visual Studio creates Debug images that do not work when run from the Docker CLI. 
+Start the solution by pressing `F5`. See if it works correctly. Timebox your efforts to try to fix any errors.
 
 ## <a name="sql"></a>Running SQL Server in a Docker container
 
-Now that your application is running two projects in Docker containers, you can also run SQL Server from a container. This is convenient for isolated development and testing purposes. It eliminates the need to install SQL Server locally.
+Now that your application is running two projects in Docker containers, you can also run SQL Server in the same composition. This is convenient for isolated development and testing purposes. It eliminates the need to install SQL Server locally and to start the container for SQL Server manually.
 
-You have already pulled the SQL Server image in the previous lab. Go ahead and add the definition for a container service in the `docker-compose.yml` file.
+Go ahead and add the definition for a container service in the `docker-compose.yml` file.
 
 ```
   sql.data:
@@ -164,10 +129,50 @@ You will need to change the connection string for the Web API to reflect the new
  
 With this change, you should be able to run your application completely from containers. Make sure you have stopped any containers related to the application. Give it a try and fix any issues that occur. 
 
+## <a name="debug"></a>Debugging with Docker container instances
+One of the nicest features of the Docker support in Visual Studio is the debugging support while running container instances. Check out how easy debugging is by stepping through the application like before.
+
+Put a breakpoint at the first statement of the `OnGetAsync` method in the `IndexModel` class in the `GamingWebApp` project. Add another breakpoint in the `Get` method of the LeaderboardController in the Web API project.
+Run the application by pressing F5. You should be hitting the breakpoints and jump from one container instance to the other.
+
+## <a name="build"></a>Building container images
+Start a command prompt and use the Docker CLI to check which container instances are running at the moment. There should be three containers related to the application:
+- SQL Server in `sqldocker`.
+- SQL Server in `dockercompose<id>_gamingwebapp_1`.
+- Web application in `dockercompose<id>_gamingwebapp_1`.
+- Web API in `dockercompose<id>_leaderboard.webapi_1`.
+
+where `<id>` is a random unique integer value.
+
+> ##### New container images
+> Which new container images are on your system at the moment? Check your images list with the Docker CLI
+
+Stop your application if necessary. Verify that any container instances of the Web application or Web API are actually stopped. If not, stop them by executing the following command for each of the container instances:
+
+```
+docker kill <container-id>
+```
+
+> Remember that you can use the first unique part of the container ID or its name
+
+Now, try and run the Web application image yourself. Start a container instance.
+```
+docker run -p 8080:80 -it --name webapp gamingwebapp:dev
+```
+Check whether the web application is working. It shouldn't work and you find that it brings you in a bash shell on Linux.
+```
+root@65e40486ab0f:/app#
+```
+
+Your container image does not contain any of the binaries that make your ASP.NET Core Web application run. Visual Studio uses volume mapping to map the files on your file system into the running container, so it can detect any changes thereby allowing small edits during debug sessions.
+
+> ##### Debug images from Visual Studio
+> Remember that Visual Studio creates Debug images that do not work when run from the Docker CLI. 
+
 > ##### Asking for help
 > Remember that you can ask your proctor for help. Also, working with fellow attendees is highly recommended, as it can be fun and might be faster. Of course, you are free to offer help when asked.
 
 ## Wrapup
-In this lab you have added Docker support to run both of your projects from Docker containers as well as the SQL Server instance. You enhanced the Docker Compose file that describes the composition of your complete application. in the next lab you will improve the networking part of the composition.
+In this lab you have added Docker support to run both of your projects from Docker containers as well as the SQL Server instance. You enhanced the Docker Compose file that describes the composition of your complete application. In the next lab you will improve the networking part of the composition.
 
 Continue with [Lab 4 - Networking](Lab4-Networking.md).
