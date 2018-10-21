@@ -135,6 +135,8 @@ Inside this resource group you will find the underlying resources of your AKS cl
 
 ## Deploy your Docker composition to a cluster
 
+> You can switch back to the master branch and build your images from there.
+
 Kubernetes does not use Docker Compose files for its deployments. The Visual Studio solution contains a folder `Deployments` under `Solution Items`. You should find a Kubernetes deployment manifest in it, called `gamingwebapp.k8s-static.yaml`. Kubernetes use these files instead of composition files. Open a command prompt and navigate to the folder.
 
 You need to make a few changes to the manifest for it to be useable. In particular, make sure you change the following markers:

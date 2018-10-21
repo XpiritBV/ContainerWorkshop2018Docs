@@ -76,6 +76,8 @@ Next, you are going to create a similar compose override for a production situat
 
 ## <a name="change"></a>Working with environments in .NET Core
 
+> Switch back to the master branch to make sure all files so far are up to date.
+
 In this sample application the web application only has a single setting for an external Web API endpoint.
 ```
 - LeaderboardWebApiBaseUrl=http://leaderboard.webapi

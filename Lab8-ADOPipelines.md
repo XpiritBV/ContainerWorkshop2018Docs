@@ -11,13 +11,13 @@ Before you can get started with building pipelines, you need a Azure DevOps (ADO
 
 Also, your cloned Git repository needs to be pushed to the ADO project. Assuming you have your current work branch checked out, you can change the URL for the origin to point to the Git repo in your Team Project.
 ```
-git remote set-url origin https://<your-vsts-account>.visualstudio.com/ContainerWorkshopTeamProject/_git/dcontainerworkshop
+git remote set-url origin https://<your-vsts-account>.visualstudio.com/<your-teamproject>/_git/containerworkshop
 git push -u origin --all
 ```
 
 ## Create build pipelines
 
-Login to your ADO account and switch to the correct team project. Go to the `Code` tab and check that your source code is there. Switch to `Build and Release` and create a new definition for a Build pipeline. Select the link for Visual Designer at the start. Pick `Azure Repos Git` and the master branch of your Git repo.
+Login to your ADO account and switch to the correct team project. Go to `Repos, Files` and check that your source code is there. Switch to `Pipelines, Build` and create a new definition for a Build pipeline. Select the link for Visual Designer at the start. Pick `Azure Repos Git` and the master branch of your Git repo.
 
 From the available templates select the `ASP.NET Application with containers` template to give yourself a head start.
 
