@@ -14,15 +14,12 @@ Goals for this lab:
 
 Docker registries are to Docker container images what NuGet feeds are to NuGet packages. They allow access to existing images that have been published by the owner. They can be private or publicly accessible.
 
-Visit the website of [Docker Hub](https://hub.docker.com/) at https://hub.docker.com/ and sign up for a new account. If you have one already, you might want to create a new organization.
+You will create an Azure Container Registry which allows (multiple) private repositories inside your registry. Run the following command from the command-line to create it:
+Find a unique name for your container registry, e.g. `ContainerWorkshopRegistry` plus your last name.
 
-<img src="images/EmptyDockerHub.png" width="500"/>
-
-Alternatively, you can also create an Azure Container Registry which allows (multiple) private repositories inside your registry. Run the following command from the command-line to create it:
 ```
-az acr create --name ContainerWorkshopRegistry --resource-group ContainerWorkshop --sku Basic --admin-enabled true --location WestEurope
+az acr create --name <registry-name> --resource-group ContainerWorkshop --sku Basic --admin-enabled true --location WestEurope
 ```
-You might need to change the name of the container registry from `ContainerWorkshopRegistry` to a unique name.
 
 After creation, check if the registry is created successfully:
 ```
@@ -30,8 +27,6 @@ az acr list --resource-group containerworkshop --output table
 AcrLoginServer
 ```
 Notice the AcrLoginServer name.
-
-From here, we will refer to both Docker Hub and Azure Container Registry as the 'registry'. Your registry (or organization) name is needed in a moment.
 
 Now that we have a registry, you should try to create working images for our application and push the images to the registry. First, create a `Release` build of the solution. Run the build to check whether it is working correctly. With a successful build run `docker images` and verify that you have new images that are not tagged as `:dev`. Output should be similar to this:
 
