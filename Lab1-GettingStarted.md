@@ -100,15 +100,16 @@ az aks create --resource-group ContainerWorkshop --name ContainerWorkshopCluster
   --enable-addons http_application_routing
 ```
 
-For now, you will fix the RBAC access with by running the following command from the folder .\deployments in the root of your folder for the cloned Git repository:
-```
-kubectl create -f dashboard-admin.yaml
-```
-
 After the cluster has been created, check whether it is up and running by opening the Kubernetes Dashboard:
 ```
 az aks get-credentials --resource-group ContainerWorkshop --name ContainerWorkshopCluster
 az aks browse --resource-group ContainerWorkshop --name ContainerWorkshopCluster
+```
+
+You might get errors in the home page of Role Based Access Control (RBAC) is on by default for the latest version of AKS.
+For now, you will fix the RBAC access with by running the following command from the folder .\deployments in the root of your folder for the cloned Git repository:
+```
+kubectl create -f dashboard-admin.yaml
 ```
 
 If all is correct, the Kubernetes dashboard should be launched from your default browser.

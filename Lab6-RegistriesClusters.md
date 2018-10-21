@@ -141,7 +141,9 @@ You need to make a few changes to the manifest for it to be useable. In particul
 In order to be able to pull images from your registry into the cluster, you will need to authenticate against a private registry. If you are using Docker Hub, then this is not required. 
 
 For Azure Container Registry, you can create another service principal that will be allowed access to the registry. Execute the following command after having replaced the placeholders with your specific details.
-```az ad sp create-for-rbac --scopes /subscriptions/<your-subscription-id>/resourcegroups/<resource-group-name>/providers/Microsoft.ContainerRegistry/registries/<your-registry-name> --role Contributor --name ContainerWorkshopRegistryPrincipal
+
+```
+az ad sp create-for-rbac --scopes /subscriptions/<your-subscription-id>/resourcegroups/<resource-group-name>/providers/Microsoft.ContainerRegistry/registries/<your-registry-name> --role Contributor --name ContainerWorkshopRegistryPrincipal
 ```
 This command creates a principal that has the Contributor role in the ACR. Take a note of the password that is generated in the output.
 
