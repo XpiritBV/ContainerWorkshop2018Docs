@@ -150,7 +150,7 @@ This command creates a principal that has the Contributor role in the ACR. Take 
 Next, you are going to create a secret in the cluster to hold the credentials for this principal. The secret is specific to container registries and allows the manifest deployment to use the credentials to pull images for the Kubernetes services. 
 
 ```
-kubectl create secret docker-registry pullkey --docker-server <your-registry-name>.azurecr.io --docker-email <your-email> --docker-username=ContainerWorkshopRegistryPrincipal --docker-password <generated-password>
+kubectl create secret docker-registry pullkey --docker-server <your-registry-name>.azurecr.io --docker-email <your-email> --docker-username=<your-principal-appid> --docker-password <generated-password>
 ```
 
 Later, secrets will be covered in more detail. Execute the next command, again replacing the necessary items.
