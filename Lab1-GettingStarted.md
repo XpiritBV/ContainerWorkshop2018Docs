@@ -94,7 +94,7 @@ You can create the cluster with the `az aks create` command. You need to tweak c
 az aks create --resource-group ContainerWorkshop --name ContainerWorkshopCluster 
   --dns-name-prefix containerworkshop 
   --client-secret <your-principal-password> 
-  --service-principal <your-principal-name> 
+  --service-principal <your-principal-appid> 
   --generate-ssh-keys --location westeurope --node-count 3 
   --kubernetes-version 1.11.3 --max-pods 100 
   --enable-addons http_application_routing
