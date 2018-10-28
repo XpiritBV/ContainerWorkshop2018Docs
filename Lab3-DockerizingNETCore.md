@@ -45,11 +45,11 @@ Observe the changes that Visual Studio makes to your solution.
 
 Most noticeably you will see that a new Docker Compose project has been added with the name `docker-compose`. It is now your start project for the solution. 
 
-Inspect the contents of the `docker-compose.yml` and `docker-compose.override.yml` files if you haven't already. Ensure that you understand the meaning of the various entries in the YAML files.
+Inspect the contents of the `docker-compose.yml` and `docker-compose.override.yml` files if you haven't already. The compose file specifies which services (containers), volumes (data) and networks (connectivity) need to be created and run. The `override` file is used for local debugging purposes. Ensure that you understand the meaning of the various entries in the YAML files.
 
 Repeat adding Docker support for the Web application project. More changes will be made to the YAML files.
 
-Run your application again. Which projects are effectively started? If some project is not running, start it by choosing Start, Debug instance from the right-click context menu of the project. 
+Run your application again. Which projects are effectively started? If some project is not running, start it by choosing `Debug` > `Start new instance` from the right-click context menu of the project. 
 
 > Does the application still work?
 
@@ -155,11 +155,13 @@ docker kill <container-id>
 
 > Remember that you can use the first unique part of the container ID or its name
 
+*Note that you can get the same result by performing running `Clean solution` from the `Build` menu in Visual Studio.*
+
 Now, try and run the Web application image yourself. Start a container instance.
 ```
 docker run -p 8080:80 -it --name webapp gamingwebapp:dev
 ```
-Check whether the web application is working. It shouldn't work and you find that it brings you in a bash shell on Linux.
+Check whether the web application is working. It shouldn't work and you'll find that it brings you in a bash shell on Linux.
 ```
 root@65e40486ab0f:/app#
 ```

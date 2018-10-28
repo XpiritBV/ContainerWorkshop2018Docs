@@ -88,6 +88,17 @@ Next, create a service principal to manage the Azure subscription. Store the inf
 ```
 az ad sp create-for-rbac --name "ContainerWorkshopServicePrincipal" --skip-assignment
 ```
+The result should look similar to this:
+
+``` json
+{
+  "appId": "71860f73-7e41-4863-afca-01acaaaa9cd4",
+  "displayName": "azure-cli-2018-10-26-15-25-53",
+  "name": "http://azure-cli-2018-10-26-15-25-53",
+  "password": "7ae238c0-1bdb-4df7-bf27-29091ed48dfa",
+  "tenant": "1b2bfa88-825c-4d4e-b258-5ae208c0aafa"
+}
+```
 
 You can create the cluster with the `az aks create` command. You need to tweak command below to contain the specifics from the created service principal. You can also change the names of the cluster and DNS name prefix to your liking:
 ```
@@ -102,7 +113,7 @@ az aks create --resource-group ContainerWorkshop --name ContainerWorkshopCluster
 
 After the cluster has been created, check whether it is up and running by opening the Kubernetes Dashboard:
 ```
-az aks get-credentials --resource-group ContainerWorkshop --name ContainerWorkshopCluster
+az aks get-credentials --resource-group ContainerWorkshop --name ContainerWorkshopCluster -a
 az aks browse --resource-group ContainerWorkshop --name ContainerWorkshopCluster
 ```
 
@@ -114,7 +125,7 @@ kubectl create -f dashboard-admin.yaml
 
 If all is correct, the Kubernetes dashboard should be launched from your default browser.
 
-This does not incur any costs other than your Azure resource consumption and should be fit easily within your Azure trial.
+This does not incur any costs other than your Azure resource consumption and should be fit easily within your Azure trial subscription credits.
 
 ## Wrapup
 You have prepared your laptop and cloud environment to be ready for the next labs. Any issues you may have, can probably be resolved during the labs. Ask your fellow attendees or the proctor to help you, if you cannot solve the issues.

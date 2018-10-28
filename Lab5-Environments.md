@@ -59,9 +59,9 @@ The combination of the two aforementioned compose files is enough to start a com
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up
 ```
 
-Ideally, your override file for Visual Studio contains the service that are needed when running from the IDE on a development machine.
+Ideally, your override file for Visual Studio contains the services and settings that are needed when running from the IDE on a development machine.
 
-Take a moment to contemplate whether the `sql.data` service should be defined in the `docker-compose.yml` file or elsewhere. Remember that running SQL Server from a container is not recommended from a production scenario unless special measures have been taken. For local development purposes is it useful to have a SQL Server instance that loses its data on each start of the hosting container. 
+Take a moment to contemplate whether the `sql.data` service should be defined in the `docker-compose.yml` file or elsewhere. Remember that running SQL Server from a container is not recommended from a production scenario unless special measures have been taken. For local development purposes it might be useful to have a SQL Server instance that loses its data on each start of the hosting container. You can also choose to use a volume mapping to avoid data loss.
 
 Change the location of the definition to the override compose file. Merge it with the existing service. 
 
@@ -76,7 +76,7 @@ Next, you are going to create a similar compose override for a production situat
 
 ## <a name="change"></a>Working with environments in .NET Core
 
-> Switch back to the master branch to make sure all files so far are up to date.
+> Switch back to the master branch to make sure all files so far are up to date. Make sure to commit or undo any changes you made first.
 
 In this sample application the web application only has a single setting for an external Web API endpoint.
 ```
@@ -85,7 +85,7 @@ In this sample application the web application only has a single setting for an 
 
 Even so, you can formalize a group of related settings, regardless of their origin. This can be from one of the `appsettings.json` files, `docker-compose.override.yml` files or even environment variables. 
 
-In the web application project you will find a class called `LeaderboardApiOptions` with a single `string` property called `BaseUrl`. In more complex scenarios this class would contain more properties for each of the settings.
+In the web application project you will find a class called `LeaderboardApiOptions` with a single `string` property called `BaseUrl`. In more complex scenarios this class would likely contain more settings. For example, configuration settings for authorization and authentication.
 
 Next, go to the `Startup` class and locate the statement in the `ConfigureServices` method to load the web app settings from the configuration.
 ```
