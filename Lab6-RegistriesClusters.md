@@ -24,9 +24,8 @@ az acr create --name <registry-name> --resource-group ContainerWorkshop --sku Ba
 After creation, check if the registry is created successfully:
 ```
 az acr list --resource-group containerworkshop --output table
-AcrLoginServer
 ```
-Notice the AcrLoginServer name.
+Notice the `LOGIN SERVER` name.
 
 Now that we have a registry, you should try to create working images for our application and push the images to the registry. First, create a `Release` build of the solution. Run the build to check whether it is working correctly. With a successful build run `docker images` and verify that you have new images that are not tagged as `:dev`. Output should be similar to this:
 
@@ -50,7 +49,7 @@ Tag the current images again to include the registry name. This will not create 
 ```
 docker tag gamingwebapp:latest <registry>/gamingwebapp:latest
 ```
-Make sure you replace the name `<registry>` with your registry name. For Docker Hub it is the simple name, like `containerworkshop`. Azure Container Registry needs the name of the AcrLoginServer (e.g. `containerworksopregistry.azurecr.io`)
+Make sure you replace the name `<registry>` with your registry name. For Docker Hub it is the simple name, like `containerworkshop`. For Azure Container Registry, use the value of `LOGIN SERVER` as the registry name, e.g. `ContainerWorkshopRegistryJones.azurecr.io`.
 
 Perform the tagging for the Web API image as well. Verify that the images are tagged and have the same image ID as the ones without registry name.
 
@@ -58,13 +57,18 @@ Login to the registry. For example, for Docker Hub this will be:
 ```
 docker login
 ```
-and for ACR you can login with:
+and for ACR, get the credentials first, by using 
 ```
-az acr login --name ContainerWorkshopRegistry
+az acr credential show --resource-group ContainerWorkshop --name <registry>
 ```
-replacing the name with your unique registry's name.
 
-When you have successfully logged in, push both of the images to the their respective repositories in the registry:
+Next, you can login with:
+```
+az acr login --name <registry>
+```
+Replace the name with your unique registry's name and supply one of the passwords that was displayed earlier.
+
+When you have successfully logged in, push both images to the their respective repositories in the registry:
 
 ```
 docker push <registry>/gamingwebapp:latest
@@ -91,7 +95,12 @@ docker rmi gamingwebapp:dev
 ```
 
 Verify that the `gamingwebapp` images are no longer on your machine.
-Visit your registry at https://hub.docker.com/r/<registry>/gamingwebapp/ to check whether the image is actually in the repository.
+When using DockerHub, visit your registry at https://hub.docker.com/r/<registry>/gamingwebapp/ to check whether the image is actually in the repository.
+
+When using ACR, use this command:
+```
+az acr repository list --resource-group ContainerWorkshop --name <registry>
+```
 
 Then, try to pull the image from the registry with:
 ```

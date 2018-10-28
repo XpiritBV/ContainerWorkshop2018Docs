@@ -25,8 +25,13 @@ docker inspect <networkid>
 where *\<networkid>* is the unique part of the network ID listed in `docker network ls`. 
 Read each of the JSON fragments. Pay special attention to the `Config` object in the `IPAM` section and the `Containers`  array. 
 
+### Types of networks
+- bridge: The default network driver. Mostly used when standalone containers need to communicate with each other. It allows communication between containers on the same host inside the same bridge network, but isolates them from other containers. Custom bridge networks allow containers to find each other by using DNS. The container name can be used to find its IP address.
+- host: Used for standalone containers. This network remove isolation between the container and host, and use the host's network directly. A container can access services running on the host, by calling them on `localhost` and using a port number.
+- none: Using this option, disables networking for a container.
+
 > ##### Different configurations
-> Why are the config sections for `host` and `none` empty? 
+> Why are the config sections for networks `host` & `none` empty? 
 > Which IP addresses will be assigned to the containers when they are inside a bridge network?
 
 Shut down any running compositions, by stopping your Visual Studio debugging session and any manually started containers of the demo application.
@@ -69,7 +74,7 @@ You should be able to ping container `c3` from inside itself with `ping c3.conta
 
 The final step is to design your network topology and use the Docker Compose YAML files to specify the networks and aliases for the containers.
 
-Create a visual diagram for the three containers and draw assign them to two networks. The boundaries of these networks should be such that the web application can reach the web API, but not the SQL Server database. On the other hand, the Web API should be able to reach both the SQL Server databse and the web application, but not from the same network. 
+Create a visual diagram for the three containers and draw assign them to two networks. The boundaries of these networks should be such that the web application can reach the web API, but not the SQL Server database. On the other hand, the Web API should be able to reach both the SQL Server database and the web application, but not from the same network. 
 
 > ##### A choice of network type
 > What type of network drive should the two networks use? Remember that your are currently in a local, single-host situation. How would that change when running in a cluster?
