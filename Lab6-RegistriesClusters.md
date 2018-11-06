@@ -18,6 +18,7 @@ You will create an Azure Container Registry which allows (multiple) private repo
 Find a unique name for your container registry, e.g. `ContainerWorkshopRegistry` plus your last name.
 
 ```
+az group create --name ContainerWorkshop --location WestEurope
 az acr create --name <registry-name> --resource-group ContainerWorkshop --sku Basic --admin-enabled true --location WestEurope
 ```
 
@@ -64,7 +65,7 @@ az acr credential show --resource-group ContainerWorkshop --name <registry>
 
 Next, you can login with:
 ```
-az acr login --name <registry>
+az acr login --name <registry url> -u <registry name>
 ```
 Replace the name with your unique registry's name and supply one of the passwords that was displayed earlier.
 
@@ -112,11 +113,16 @@ This process can be automated by a build and release pipeline. You will learn ho
 
 At this point you will need to have access to a Docker cluster. If you haven't done so already, create an Azure Kubernetes Service cluster in Azure. [Module 1](Lab1-GettingStarted.md) describes how you can create one.
 
+Make sure the addon 'http application routing' is installed. If it's not run this command:
+```
+az aks enable-addons -a http_application_routing --resource-group ContainerWorkshop --name ContainerWorkshopCluster
+```
+
 Open the dashboard of your cluster. There are several ways to connect to it. The easiest way is to use VSCode and the Kubernetes extension. Navigate to the Kubernetes pane on the left and find your cluster listed. Right-click it and use `Set as current cluster` if you have more than one cluster and yours is not selected yet. Right-click again and select `Open Dashboard` from the context menu. This should create a port mapping from your localhost machine to the master node of your cluster. A browser window will open at `http://localhost:10000` and show the Kubernetes dashboard.
 
 Alternatively, you can run the command:
 ```
->az aks browse --name ContainerWorkshopCluster --resource-group ContainerWorkshop
+az aks browse --name ContainerWorkshopCluster --resource-group ContainerWorkshop
 ```
 and navigating to the localhost address `http://localhost:8001` that forwards to the actual cluster.
 
@@ -125,7 +131,7 @@ You also set your cluster as the active context and interact with it using kubec
 kubectl cluster-info
 kubectl config get-clusters
 kubectl config get-contexts
-kubectl config use-context ContainerWorkshopCluster-admin
+kubectl config use-context ContainerWorkshopCluster
 ```
 
 Open the [Azure Portal](https://portal.azure.com). Find the resource for your cluster in the resource group `ContainerWorkshop`. Make a note of the properties `HTTP application routing domain` and `API server address`.
@@ -139,20 +145,21 @@ Inside this resource group you will find the underlying resources of your AKS cl
 
 ## Deploy your Docker composition to a cluster
 
-> You can switch back to the master branch and build your images from there.
+> You can switch back to the master branch and build your images from there. Commit or undo any pending changes.
 
 Kubernetes does not use Docker Compose files for its deployments. The Visual Studio solution contains a folder `Deployments` under `Solution Items`. You should find a Kubernetes deployment manifest in it, called `gamingwebapp.k8s-static.yaml`. Kubernetes use these files instead of composition files. Open a command prompt and navigate to the folder.
 
 You need to make a few changes to the manifest for it to be useable. In particular, make sure you change the following markers:
 - `__containerregistry__`
 - `__httpapplicationroutingdomain__`
+- change `gamingwebapp:demo` into `gamingwebapp:latest`
 
 In order to be able to pull images from your registry into the cluster, you will need to authenticate against a private registry. If you are using Docker Hub, then this is not required. 
 
 For Azure Container Registry, you can create another service principal that will be allowed access to the registry. Execute the following command after having replaced the placeholders with your specific details.
 
 ```
-az ad sp create-for-rbac --scopes /subscriptions/<your-subscription-id>/resourcegroups/<resource-group-name>/providers/Microsoft.ContainerRegistry/registries/<your-registry-name> --role Contributor --name ContainerWorkshopRegistryPrincipal
+az ad sp create-for-rbac --scopes /subscriptions/<your-subscription-id>/resourcegroups/ContainerWorkshop/providers/Microsoft.ContainerRegistry/registries/<your-registry-name> --role Contributor --name ContainerWorkshopRegistryPrincipal
 ```
 This command creates a principal that has the Contributor role in the ACR. Take a note of the password that is generated in the output.
 
@@ -168,7 +175,16 @@ Save your work and go to the command prompt. Run the command:
 ```
 kubectl apply -f .\gamingwebapp.k8s-static.yaml
 ```
-and watch the results from the dashboard. 
+and watch the results from the dashboard. This deployment could take some time to complete. As container images must be downloaded and additional virtual disks will be deployed to your cluster resource group in Azure.
+Also, a DNS A-record and a public IP address will be created. After about 5 minutes, everything should be up and running. 
+
+>Note that consecutive deployments of the same application, but with newer images, will go a lot faster.
+
+Open a browser and navigate to the URL you supplied as `__httpapplicationroutingdomain__` preceded by "http://containerworkhop." e.g:
+
+`http://containerworkhop.6558a6c44f9d4e63aaa6.westeurope.aksapp.io` 
+
+You should see the page named 'All time highscore hall of fame'. 
 
 > ##### Using containerized SQL Server in production
 > It is not recommended to use SQL Server in a production scenario in this way. You will loose data, unless you take special measures, such as mounting volumes. 
