@@ -11,20 +11,24 @@ Goals for this lab:
 
 You must have noticed that the connection string to the database contains a username and password. The connection string is set in an environment variable that is stored in the `docker-compose.yml` and `gamingwebapp.k8s-static.yaml` file . Even though this file is only relevant during startup when the environment variables are set on containers, these secrets inside running containers are easily accessible when you have access to the host.
 
-Open a Docker CLI and find a running container on your host. This can be your development machine or the Docker cluster from the previous lab. Run one of the following command depending on your choice:
+Open a Docker CLI and find a running container on your host. If there aren't any, run the docker project from the demo solution in Visual Studio. Run the following command:
 
 ```
 docker ps
 ```
-Pick any running container, but preferably the web API which actually contains the connection string in an environment variable. Use its container ID to inspect it. You should find the `Env` section that contains all variables for the current environment.
+
+Inspect SQL Server, which contains the connection string in an environment variable. Use its container ID to inspect it. 
+
 ```
-"Env": [
-  "ASPNETCORE_ENVIRONMENT=Development",
-  "ASPNETCORE_URLS=http://0.0.0.0:1337",
-  "ConnectionStrings:LeaderboardContext=Server=sqldata;
-    Database=Leaderboard;User Id=retrogamer;Password=Pass@word;
-    Trusted_Connection=False"
-],
+docker inspect -f "{{.Config.Env}} " <container-id>
+```
+
+This displays the `Env` section that contains all variables for the current environment.
+```
+SA_PASSWORD=Pass@word 
+MSSQL_PID=Developer 
+ACCEPT_EULA=Y 
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 ```
 
 You can also look at the history of images and see the various commands that were used to build them. Try running:
@@ -38,7 +42,18 @@ Docker containers and their images are inspectable and it is non-trivial to work
 
 You can use Azure Key Vault to store sensitive information, such as  connections, certificates or accounts, in keys, secrets and certificates.
 
-Visit the [Azure Portal](https://portal.azure.com) and create a Key Vault resource in your resource group. Ideally you would place the KeyVault in a separate resource group, as its lifetime should be surpassing that of the container cluster's group. It needs to have a unique name. Take note of the DNS name of the Key Vault in the `Properties` section.
+Run the following commands to create a new key vault (It needs to have a unique name):
+
+```
+az provider register -n Microsoft.KeyVault
+az keyvault create --name <unique name> --resource-group ContainerWorkshop --enabled-for-deployment --enabled-for-template-deployment
+```
+
+Visit the [Azure Portal](https://portal.azure.com) and go to your new Key Vault resource in your resource group. 
+
+>Note: Ideally you would place the KeyVault in a separate resource group, as its lifetime should be surpassing that of the container cluster's group. 
+
+Take note of the DNS name of the Key Vault in the `Properties` section.
 
 <img src="images/KeyVaultDNSName.png" width="400" />
 
@@ -55,7 +70,7 @@ Allow the Web API service principal to access the Key Vault. For that you need a
 vFwBC9rEtBfO7BNVgeYmSLcpxhTGQfqKG4/ZAoCKhjh=
 ```
 
-Navigate to the `Access policies` under your Key Vault blade. Create a new access policy by clicking `Add new` and selecting the `Leaderboard Web API` as the principal. Give it Key and Secret permissions to `Get` and `List`.
+Navigate to the `Access policies` under your Key Vault blade. Create a new access policy by clicking `Add new` and selecting the `Leaderboard Web API` as the principal. Assign `Get` and `List` permission for `Secrets`.
 
 This should give you a list of values for the following :
 
@@ -83,15 +98,21 @@ Add code to the `Startup` class's constructor to add the Azure Key Vault into th
 
 ```
 builder.AddAzureKeyVault(
-    Configuration["KeyVaultName"],
-    Configuration["KeyVaultClientID"],
-    Configuration["KeyVaultClientSecret"]
+    configuration["KeyVaultName"],
+    configuration["KeyVaultClientID"],
+    configuration["KeyVaultClientSecret"]
 );
 Configuration = builder.Build();
 ```
 
 At this point you are ready to store the connection string in the Key Vault. Open the blade for the Key Vault and go to `Secrets`. Add a new secret with the name `ConnectionStrings--LeaderboardContext`. The value is the connection string for the SQL Server instance in your container or the Azure SQL Database.
-The double-dash is a convention to indicate a section. In this format it will surface as a connection string just like before.
+For the containerized database you would use this value:
+
+`Server=sql.retrogaming.internal;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False`
+
+The double-dash in the name of the secret, is a convention to indicate a section. In this format it will surface as a connection string just like before.
+
+Remove the connection string value from `appsettings.json`.
 
 Run your web API separately by clicking `Debug, Start new instance` from the right-click context menu of the project. Add a breakpoint in the ConfigureServices method and check whether the connection string is read correctly. If all is well, run the composition locally.
 
@@ -99,12 +120,12 @@ Run your web API separately by clicking `Debug, Start new instance` from the rig
 
 Now that all secrets are safely stored in the Key Vault you are one step closer to managing the sensitive configuration information of your Docker solution.
 
-You must have noticed how there is still a set of secrets present in the solution. This must be remediated, as these secrets allow access to the Key Vault and enable anyone to retrieve all keys and secrets from the vault.
+You must have noticed how there is still a set of secrets present in the solution. (The service principal credentials.) This must be resolved too, as these secrets allow access to the Key Vault and enable anyone to retrieve secrets from the vault.
 
 First, let's store the Key Vault access information in a safe place during development on your machine. Right-click the Web API project and choose `Manage User Secrets` from the context menu. It will open a JSON file called `secrets.json` that is not added to the project. Instead it exists on the file system in a special location `%AppData%\Roaming\Microsoft\UserSecrets\<UserSecretsId>\secrets.json`. Find the location of this file and verify that the `UserSecretsId` corresponds to the new entry in the `.csproj` file of the Web API project.
 
 Cut the values for the Key Vault connection from the `appsettings.json` file and add these to the `secrets.json` file. Save the file and go to the `Startup` class. 
-Add the code below in the constructor to add user secrets to the configuration system of .NET Core.
+Assert the presence of code below in the constructor to add user secrets to the configuration system of .NET Core.
 ```
   .AddEnvironmentVariables(); // Existing code
 
@@ -117,19 +138,25 @@ Add the code below in the constructor to add user secrets to the configuration s
 
 Check if the user secrets are used when running the Web API outside of a container again. When it does, try running it in the complete composition. You should find that it does not. Think about why it does not work anymore when run from a container.
 
-To fix the issue of the user secrets not being available in the container, you need to add an environment variable to your `docker-compose.override.yml` file for the `USER_SECRETS_ID`.
+To fix the issue of the user secrets not being available in the container, you need **remove** the connection string environment variable from the `docker-compose.override.yml` file.
 
 ```
-- USER_SECRETS_ID=<your_user_secrets_id>
+- ConnectionStrings:LeaderboardContext=Server=sql.retrogaming.internal;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False
 ```
 Additionally, you need to give the container access to the local file system to be able to read the `secrets.json` file. You can mount a volume to the container that maps the user secrets folder into the container.
 
+Assert the presence of the following line in your `docker-compose.override.yml` file:
+
+on Windows:
+```
+volumes:
+  - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+```
+or on Linux:
 ```
 volumes:
   - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
-  - $APPDATA/Microsoft/UserSecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
 ```
-You need only one of the two entries for the volumes. The entry mapping `$HOME` is for Linux OS, and the `$APPDATA` entry for a Windows OS based development machine.
 
 Using user secrets is well suited for development scenarios and single host machine. When running in a cluster for production scenarios it is not recommended. Instead you can use Docker Secrets to add secrets to your cluster host machines. 
 
