@@ -131,7 +131,7 @@ Examine the contents of the master database by adding a Data Connection in the S
 - Username: sa
 - Password: Pass@word
 
-<img src="images/AddDataConnection.png" width="400" />
+<img src="images/AddDataConnection.PNG" width="400" />
 
 Inspect the running containers again with `docker ps`. 
 

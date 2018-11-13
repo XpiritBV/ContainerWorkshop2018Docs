@@ -35,7 +35,7 @@ Visual Studio 2017 offers tooling for adding support to run your application in 
 
 To get started you can right-click the Leaderboard.WebAPI project and select Add, Container Orchestrator Support from the context menu. Choose `Docker Compose` as the local orchestrator from the dropdown.
 
-<img src="images/AddContainerOrchestratorSupport.png" width="400" />
+<img src="images/AddContainerOrchestratorSupport.PNG" width="400" />
 
 In the next dialog, choose `Linux` as the target operating system.
 
