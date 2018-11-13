@@ -130,6 +130,7 @@ Examine the contents of the master database by adding a Data Connection in the S
 - Server: 127.0.0.1,5433 (notice the comma instead of a colon)
 - Username: sa
 - Password: Pass@word
+- Database instance: master
 
 <img src="images/AddDataConnection.PNG" width="400" />
 
