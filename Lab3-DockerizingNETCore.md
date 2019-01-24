@@ -23,7 +23,11 @@ Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to na
 - `GamingWebApp`, an ASP.NET MVC Core frontend 
 - `Leaderboard.WebAPI`, an ASP.NET Core Web API 
 
-For now, the SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on.
+For now, the SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as desribe in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#lab-2---docker-101)
+
+```
+docker run -d -p 5433:1433 --env ACCEPT_EULA=Y -e SA_PASSWORD="Pass@word" --env MSSQL_PID=Developer --name sqldocker microsoft/mssql-server-linux
+```
 
 Right-click both the GamingWebApp and Leaderboard.WebAPI and start to debug a new instance.
 
