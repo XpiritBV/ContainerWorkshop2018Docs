@@ -55,6 +55,8 @@ Repeat adding Docker support for the Web application project. More changes will 
 
 Run your application again. Which projects are effectively started? If some project is not running, start it by choosing `Debug` > `Start new instance` from the right-click context menu of the project. 
 
+> If you encounter the error 'The DOCKER_REGISTRY variable is not set. Defaulting to a blank string.', make sure you started VIsual Studio as an administrator
+
 > Does the application still work?
 
 Now that the projects are running from a Docker container, the application is not working anymore. You can try to find what is causing the issue, but do not spend too much time to try to fix it. We will do that next.
