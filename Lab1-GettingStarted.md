@@ -118,7 +118,7 @@ az aks browse --resource-group ContainerWorkshop --name ContainerWorkshopCluster
 ```
 
 You might get errors in the home page of Role Based Access Control (RBAC) is on by default for the latest version of AKS.
-For now, you will fix the RBAC access with by running the following command from the folder .\deployments in the root of your folder for the cloned Git repository:
+For now, you will fix the RBAC access with by running the following command from the root folder of your cloned Git repository:
 ```
 kubectl create -f dashboard-admin.yaml
 ```
