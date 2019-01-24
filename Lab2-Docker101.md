@@ -126,7 +126,7 @@ You can still examine the output of the container even though it is detached fro
 ```
 docker logs 70e
 ```
-Examine the contents of the master database by adding a Data Connection in the Server Explorer. The database connection details are:
+Start Visual Studio 2017 and examine the contents of the master database by adding a Data Connection in the Server Explorer. The database connection details are:
 - Server: 127.0.0.1,5433 (notice the comma instead of a colon)
 - Username: sa
 - Password: Pass@word
