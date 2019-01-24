@@ -123,7 +123,11 @@ For now, you will fix the RBAC access with by running the following command from
 kubectl create -f dashboard-admin.yaml
 ```
 
-If all is correct, the Kubernetes dashboard should be launched from your default browser.
+If all is correct, the Kubernetes dashboard can be launched from your default browser.
+
+```
+az aks browse --resource-group ContainerWorkshop --name ContainerWorkshopCluster
+```
 
 This does not incur any costs other than your Azure resource consumption and should be fit easily within your Azure trial subscription credits.
 
