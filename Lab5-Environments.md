@@ -36,7 +36,37 @@ docker-compose -f docker-compose.ci.build.yml up
 
 The command will 'up' (meaning 'start') the composition and perform a build and publish of the projects in the solution `ContainerWorkshop`. 
 
-You could use this composition in your build pipeline to perform the build and publishing of the binaries required to create the container images of the solution. With the new multi-stage builds in the Dockerfile, you do not need this. 
+You could use this composition in your build pipeline to perform the build and publishing of the binaries required to create the container images of the solution. 
+
+There is also a new way to accomplish the same thing. This way is by using multi-stage builds in the Dockerfile. Instead of running a new composition that spins up a container to build a container, you can create a Dockerfile that uses stages to build your application. As an example look at the following file
+
+```docker
+FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+WORKDIR /app
+EXPOSE 13995
+EXPOSE 44369
+
+FROM microsoft/dotnet:2.1-sdk AS build
+WORKDIR /src
+COPY src/Services/Leaderboard.WebAPI/Leaderboard.WebAPI.csproj src/Services/Leaderboard.WebAPI/
+COPY src/Extensions/Microsoft.AspNetCore.HealthChecks/Microsoft.AspNetCore.HealthChecks.csproj src/Extensions/Microsoft.AspNetCore.HealthChecks/
+COPY src/Extensions/Microsoft.Extensions.HealthChecks/Microsoft.Extensions.HealthChecks.csproj src/Extensions/Microsoft.Extensions.HealthChecks/
+RUN dotnet restore src/Services/Leaderboard.WebAPI/Leaderboard.WebAPI.csproj
+COPY . .
+WORKDIR /src/src/Services/Leaderboard.WebAPI
+RUN dotnet build Leaderboard.WebAPI.csproj -c Release -o /app
+
+FROM build AS publish
+RUN dotnet publish Leaderboard.WebAPI.csproj -c Release -o /app
+
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app .
+ENTRYPOINT ["dotnet", "Leaderboard.WebAPI.dll"]
+```
+
+This file creates a clean base image, that is based on the runtime only. Then it uses a image with the SDK to build the application. Then it publishes the build and in the final stage it uses the `COPY --from` syntax to only use the putput of the previous stage in your clean base image. [Read more about multi-stage builds here](https://docs.docker.com/develop/develop-images/multistage-build/)
+
 
 ## <a name="create"></a>Create compositions for different environments
 
@@ -80,7 +110,7 @@ Next, you are going to create a similar compose override for a production situat
 
 In this sample application the web application only has a single setting for an external Web API endpoint.
 ```
-- LeaderboardWebApiBaseUrl=http://leaderboard.webapi
+- LeaderboardApiOptions:BaseUrl=http://leaderboard.webapi
 ```
 
 Even so, you can formalize a group of related settings, regardless of their origin. This can be from one of the `appsettings.json` files, `docker-compose.override.yml` files or even environment variables. 

@@ -1,6 +1,6 @@
 # Lab 9 - Prometheus
 
-In this Lab execersise you will install the CoreOS Prometheus Helm chart. This will enable monitoring in your cluster and providing a dashboard for all your services.
+In this Lab exercise you will install the CoreOS Prometheus Helm chart. This will enable monitoring in your cluster and provide a dashboard for all your services.
 If time permits you can add a custom metrics endpoint to your .NET core service and deploy that to the cluster and enable the monitoring of that service using the custom resource types that got created in your AKS cluster by the deployment of the Prometheus package.
 
 Goals for this lab:
@@ -23,7 +23,7 @@ kubectl get nodes
 ```
 This should return a set of nodes in your cluster. In our lab setup this should be at least one node.
 
-Now we can install the teller pod, that is required by helm to do our installation of packages.
+Now we can install the tiller pod, that is required by helm to do our installation of packages.
 Type the following command:
 ```
 helm init
@@ -39,6 +39,37 @@ Adding the repo is done with the following command:
 
 ```
 helm repo add coreos https://s3-eu-west-1.amazonaws.com/coreos-charts/stable/
+```
+
+We need to create a service-account to serve our needs for monitoring. Create a new yml file (helm.yml)and paste these contents
+
+```yml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tiller
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: tiller
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    name: tiller
+    namespace: kube-system
+```
+
+Execute the command `kubectl apply -f helm.yml
+
+Change the service account in you cluster to the newly created tiller service account
+
+```
+helm init --service-account tiller --upgrade
 ```
 
 Find the package by using the command:
@@ -58,11 +89,11 @@ We need both packages. First install the prometheus-operator package, since that
 
 Install the Helm chart by issuing the following command:
 ```
-helm install coreos/prometheus-operator --name prometheus-operator --namespace monitoring --set rbacEnable=false
+helm install coreos/prometheus-operator --name prometheus-operator --namespace monitoring 
 ```
 and after this has successfully completed:
 ```
-helm install coreos/kube-prometheus --name kube-prometheus --set global.rbacEnable=false --namespace monitoring 
+helm install coreos/kube-prometheus --name kube-prometheus --namespace monitoring 
 ```
 
 You should have Prometheus running in your cluster and we can explore the configuration by browsing to the Prometheus build in dashboard
@@ -70,16 +101,16 @@ You should have Prometheus running in your cluster and we can explore the config
 ## Browsing the build in dashboard
 When you want to look at the dashboard that is provided, we need to be able to browse to the endpoint exposed by the prometheus server. This is located in one of the deployed pods on the cluster. We can use `kubectl` to do port forwarding for us, so we can browse to the localhost to view it.
 
-To start forwarding the dashboard to your localhost use the following command in a bash shell:
+To start forwarding the dashboard to your localhost use the following command in a powershell/bash shell:
 ```
 kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l prometheus=kube-prometheus -l app=prometheus -o template --template "{{(index .items 0).metadata.name}}") 9090:9090
 ```
-Browse to the location: http://localhost/targets
+Browse to the location: http://localhost:9090/targets
 
 This will show you which targets prometheus will scrap for metrics. It also shows a status overview of endpoints if it got data or is dead for a while
 The dashboard should show something like this:
 
-<img src="images/prometheus-targets.png" />
+![dashboard](images/prometheus-targets.png)
 
 ## Browsing the Grafana dashboard
 <a name="grafana"></a>
@@ -109,14 +140,14 @@ Again for this we use port forwarding to enable us to browse to the website on o
 ```
 kubectl --namespace monitoring port-forward $(kubectl get pod --namespace monitoring -l app=kube-prometheus-grafana -o template --template "{{(index .items 0).metadata.name}}") 3000:3000
 ```
-Now browse to http://localhost/3000 and there you will see the home of the dashboards. 
-<img src="images/grafana-home-dashboard.png" />
+Now browse to http://localhost:3000 and there you will see the home of the dashboards. 
+![grafana](images/grafana-home-dashboard.png)
 
 Click on the home button in the left upper corner and then select e.g. the Nodes dashboard.
 
 this will result in a similar dashboard as displayed here:
 
-<img src="images/grafanadashboard-node.png"/>
+![Grafana Node](images/grafanadashboard-node.png)
 
 ## Creating your custom .NET core metrics Prometheus endpoint
 
