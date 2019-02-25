@@ -154,7 +154,9 @@ Kubernetes does not use Docker Compose files for its deployments. The Visual Stu
 
 You need to make a few changes to the manifest for it to be useable. In particular, make sure you change the following markers:
 - `__containerregistry__`
+	- execute the command `az acr show -n <containerregistryname> --query loginServer` to get the value
 - `__httpapplicationroutingdomain__`
+	- execute the command `az aks show --name ContainerWorkshopCluster -g ContainerWorkshop --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName ` to retrieve the value or look in the Azure Portal
 - change `gamingwebapp:demo` into `gamingwebapp:latest`
 
 In order to be able to pull images from your registry into the cluster, you will need to authenticate against a private registry. If you are using Docker Hub, then this is not required. 

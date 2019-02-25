@@ -173,7 +173,7 @@ to create a secret containing that file in the default namespace .
 Open the dashboard again and navigate to the `Secrets` section under `Config and Storage`.
 You should see the new secret there. 
 
-In the deployment manifest add the following to the `spec` section:
+In the deployment manifest add the following to the `spec` section of the `leaderboardwebapi` :
 ``` yaml
 spec:
   volumes:
