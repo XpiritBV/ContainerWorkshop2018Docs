@@ -3,7 +3,7 @@
 In this lab you are going to learn about registries and clusters. This includes pushing images to the registry and deploying compositions to a running cluster.
 
 Goals for this lab:
-- [Push images to Docker Hub registry](#push)
+- [Push images to a container registry](#push)
 - [Connecting to your cluster](#connect)
 - [Create and enhance cluster composition for Docker Swarm](#create)
 - [Deploy images to cluster](#deploy)
@@ -14,7 +14,7 @@ Goals for this lab:
 
 Docker registries are to Docker container images what NuGet feeds are to NuGet packages. They allow access to existing images that have been published by the owner. They can be private or publicly accessible.
 
-You will create an Azure Container Registry which allows (multiple) private repositories inside your registry. Run the following command from the command-line to create it:
+First, you will create an Azure Container Registry which allows (multiple) private repositories inside your registry. Run the following command from the command-line to create it:
 Find a unique name for your container registry, e.g. `ContainerWorkshopRegistry` plus your last name.
 
 ```
@@ -27,6 +27,8 @@ After creation, check if the registry is created successfully:
 az acr list --resource-group containerworkshop --output table
 ```
 Notice the `LOGIN SERVER` name.
+
+If you want to create a Docker Hub registry, follow the steps [documented here](https://docs.docker.com/docker-hub/repos/)
 
 Now that we have a registry, you should try to create working images for our application and push the images to the registry. First, create a `Release` build of the solution. Run the build to check whether it is working correctly. With a successful build run `docker images` and verify that you have new images that are not tagged as `:dev`. Output should be similar to this:
 
@@ -50,7 +52,7 @@ Tag the current images again to include the registry name. This will not create 
 ```
 docker tag gamingwebapp:latest <registry>/gamingwebapp:latest
 ```
-Make sure you replace the name `<registry>` with your registry name. For Docker Hub it is the simple name, like `containerworkshop`. For Azure Container Registry, use the value of `LOGIN SERVER` as the registry name, e.g. `ContainerWorkshopRegistryJones.azurecr.io`.
+Make sure you replace the name `<registry>` with your registry name. For Azure Container Registry, use the value of `LOGIN SERVER` as the registry name, e.g. `ContainerWorkshopRegistryJones.azurecr.io`. For Docker Hub it is the simple name, like `containerworkshop`.
 
 Perform the tagging for the Web API image as well. Verify that the images are tagged and have the same image ID as the ones without registry name.
 
@@ -96,6 +98,7 @@ docker rmi gamingwebapp:dev
 ```
 
 Verify that the `gamingwebapp` images are no longer on your machine.
+
 When using DockerHub, visit your registry at https://hub.docker.com/r/<registry>/gamingwebapp/ to check whether the image is actually in the repository.
 
 When using ACR, use this command:
@@ -131,7 +134,7 @@ You also set your cluster as the active context and interact with it using kubec
 kubectl cluster-info
 kubectl config get-clusters
 kubectl config get-contexts
-kubectl config use-context ContainerWorkshopCluster
+kubectl config use-context ContainerWorkshopCluster-admin
 ```
 
 Open the [Azure Portal](https://portal.azure.com). Find the resource for your cluster in the resource group `ContainerWorkshop`. Make a note of the properties `HTTP application routing domain` and `API server address`.
@@ -151,7 +154,9 @@ Kubernetes does not use Docker Compose files for its deployments. The Visual Stu
 
 You need to make a few changes to the manifest for it to be useable. In particular, make sure you change the following markers:
 - `__containerregistry__`
+	- execute the command `az acr show -n <containerregistryname> --query loginServer` to get the value
 - `__httpapplicationroutingdomain__`
+	- execute the command `az aks show --name ContainerWorkshopCluster -g ContainerWorkshop --query addonProfiles.httpApplicationRouting.config.HTTPApplicationRoutingZoneName ` to retrieve the value or look in the Azure Portal
 - change `gamingwebapp:demo` into `gamingwebapp:latest`
 
 In order to be able to pull images from your registry into the cluster, you will need to authenticate against a private registry. If you are using Docker Hub, then this is not required. 

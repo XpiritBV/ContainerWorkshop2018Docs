@@ -7,17 +7,17 @@ Goals for this lab:
 
 ## Working with Azure DevOps
 
-Before you can get started with building pipelines, you need a Azure DevOps (ADO) account and a team project. You can use an existing ADO account, or create a new one at [Visual Studio](https://www.visualstudio.com).
+Before you can get started with building pipelines, you need a Azure DevOps (AZDO) account and a team project. You can use an existing AZDO account, or create a new one at [Dev.Azure.Com ](https://dev.zure.com).
 
-Also, your cloned Git repository needs to be pushed to the ADO project. Assuming you have your current work branch checked out, you can change the URL for the origin to point to the Git repo in your Team Project.
+Also, your cloned Git repository needs to be pushed to the AZDO project. Assuming you have your current work branch checked out, you can change the URL for the origin to point to the Git repo in your Team Project.
 ```
-git remote set-url origin https://<your-vsts-account>.visualstudio.com/<your-teamproject>/_git/containerworkshop
+git remote set-url origin https://dev.azure.com/<your-vsts-account>/<your-teamproject>/_git/containerworkshop
 git push -u origin --all
 ```
 
 ## Create build pipelines
 
-Login to your ADO account and switch to the correct team project. Go to `Repos, Files` and check that your source code is there. Switch to `Pipelines, Build` and create a new definition for a Build pipeline. Select the link for Visual Designer at the start. Pick `Azure Repos Git` and the master branch of your Git repo.
+Login to your AZDO account and switch to the correct team project. Go to `Repos, Files` and check that your source code is there. Switch to `Pipelines, Build` and create a new definition for a Build pipeline. Select the link for Visual Designer at the start. Pick `Azure Repos Git` and the master branch of your Git repo.
 
 From the available templates select the `ASP.NET Application with containers` template to give yourself a head start.
 
@@ -98,25 +98,28 @@ If this all is working correctly you are ready to release the new image to the c
 
 With the Docker images located in the registry, you can release these to your cluster by instructing it deploy the composition defined in the Kubernetes manifest file. This file `gamingwebapp.k8s-dep.yaml` is now part of the build artifacts. This file contains various tokens that need to be replaced by actual values, such as the build ID and sensitive data. 
 
-Create a new release definition from the Releases tab in ADO. Choose an `Deploy to a Kubernetes cluster` and name the first stage `Production`. 
+Create a new release definition from the Releases tab in AZDO. Choose an `Deploy to a Kubernetes cluster` and name the first stage `Production`. 
 Add a new artifact and select the previously made pipeline as the `Source`.
 
 Select the tasks in the Production environment from the link `1 job, 1 task` link. Navigate to its empty task list and set the Agent selection to `Hosted VS2017` under the Agent job.
 
-Add a `Replace Tokens` task as the first task of the release pipeline. You might have to download it from the Marketplace first. It is a task by Guillaume Rouchon and you can find more information [here](https://github.com/qetza/vsts-replacetokens-task#readme).
-
-Name the new task `Replace tokens in manifest` and set the root directory to `$(System.DefaultWorkingDirectory)/_RetroGaming2019CIBuild/docker-compose`. Specify `deployment/gamingwebapp.k8s-dep.yaml` as the Target Files property.
-
-Next, select the `Deploy to Kubernetes` task and create a connection to your cluster with the `+ New` button. A modal dialog pops up. Give the connection a name, such as `ContainerWorkshopCluster` and set the `Server URL` to the API server address (e.g. `https://containerworkshop-ca256b98.hcp.westeurope.azmk8s.io`) of your cluster.
+Next, select the `Deploy to Kubernetes` task and create a connection to your cluster with the `+ New` button. A modal dialog pops up. Give the connection a name, such as `ContainerWorkshopCluster`.
 Finally, you need to get the KubeConfig from your Kubernetes cluster. Run the command:
 ```
 az aks get-credentials --name ContainerWorkshopCluster --resource-group ContainerWorkshop -a --file -
 ```
-This will dump the configuration to the output window. Copy it in the dialog of ADO. Check the checkbox for `Accept untrusted certificates`. Verify the connection. If all is well, close the dialog by clicking `OK`.
+This will dump the configuration to the output window. Copy it in the dialog of AZDO. Check the checkbox for `Accept untrusted certificates`. Verify the connection. If all is well, close the dialog by clicking `OK`.
 
 Set the property for Namespace to `$(namespace)`.
 
+Check the checkbox Use Configuration Files and choose the `gamingwebapp.k8s-dep.yaml` file from the artifacts.
+
 Finally, you are going to add a number of pipeline variables to serve as the replacement values in the deployment manifest and the namespace in the cluster to which will be deployed.
+
+Add a `Replace Tokens` task as the first task of the release pipeline. You might have to download it from the Marketplace first. It is a task by Guillaume Rouchon and you can find more information [here](https://github.com/qetza/vsts-replacetokens-task#readme).
+
+Name the new task `Replace tokens in manifest` and set the root directory to `$(System.DefaultWorkingDirectory)/_RetroGaming2019CIBuild/docker-compose`. Specify `deployment/gamingwebapp.k8s-dep.yaml` as the Target Files property. Set the Prefix and Suffix to __.
+
 Here is the list of variables you need to create:
 
 Name | Value (example)
