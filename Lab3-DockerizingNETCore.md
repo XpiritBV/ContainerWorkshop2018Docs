@@ -36,7 +36,7 @@ For now, the SQL Server for Linux container instance is providing the developer 
 
 Then start the container, if you did not already do this.
 ```
-docker run -d -p 5433:1433 --env ACCEPT_EULA=Y -e SA_PASSWORD="Pass@word" --env MSSQL_PID=Developer --name sqldocker microsoft/mssql-server-linux
+docker run -d -p 5433:1433 --env ACCEPT_EULA=Y -e SA_PASSWORD="Pass@word" --env MSSQL_PID=Developer --name sqldocker mcr.microsoft.com/mssql/server
 ```
 
 Right-click both the GamingWebApp and Leaderboard.WebAPI and start to debug a new instance.
@@ -118,7 +118,7 @@ Go ahead and add the definition for a container service in the `docker-compose.y
 
 ```
   sql.data:
-    image: microsoft/mssql-server-linux
+    image: mcr.microsoft.com/mssql/server
 ```
 
 Remember that from the Docker CLI you used many environment variables to bootstrap the container instance. Go back to the previous lab to check what these are.
