@@ -8,17 +8,17 @@ Goals for this lab:
 - [Change implementation to work with environment variables](#change)
 
 ## <a name="run"></a>Run existing application
-We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `Start` branch by using this command 
+We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `master` branch by using this command 
 
 ```
-git checkout start
+git checkout master
 ```
 
 > ##### Important
-> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. 
+> Make sure you have switched to the `master` branch to use the right .NET solution. 
 
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
-> Make sure you are running on the 'Start' branch.
+> Make sure you are running on the 'master' branch.
 
 Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to navigate the code and familiarize yourself with the various projects in the solution. You should be able to identify these:
 - `GamingWebApp`, an ASP.NET MVC Core frontend 
