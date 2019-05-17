@@ -10,6 +10,24 @@ Goals for this lab:
 - [Run and manage composition in cluster](#run)
 - [(Optional) Switch to Azure SQL Database](#sql)
 
+## <a name="run"></a>Run existing application
+We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `Master` branch by using this command 
+
+```
+git checkout Master
+```
+
+> ##### Important
+> Make sure you have switched to the `Master` branch to use the right .NET solution. 
+
+> Make sure you have configured 'Docker Desktop' to run Linux containers.
+
+Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to navigate the code and familiarize yourself with the various projects in the solution. You should be able to identify these:
+- `GamingWebApp`, an ASP.NET MVC Core frontend 
+- `Leaderboard.WebAPI`, an ASP.NET Core Web API 
+
+For now, a SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as desribed in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#lab-2---docker-101).
+
 ## <a name="push"></a>Pushing images to a registry
 
 Docker registries are to Docker container images what NuGet feeds are to NuGet packages. They allow access to existing images that have been published by the owner. They can be private or publicly accessible.
