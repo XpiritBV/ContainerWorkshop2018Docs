@@ -7,6 +7,8 @@ Goals for this lab:
 - [Create networks for application from CLI](#create)
 - [Define multiple networks in composition](#define)
 
+> Make sure to configure Docker Desktop to run Linux containers.
+
 ## <a name="experiment"></a>Experimenting with networking
 
 To start out, you are going to experiment a little with the networking stack of Docker.
