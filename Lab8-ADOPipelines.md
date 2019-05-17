@@ -5,6 +5,18 @@ Goals for this lab:
 - Create release pipeline for deploying images to registry
 - Deploy images to cluster
 
+## <a name="run"></a>Get existing application
+We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `master` branch by using this command 
+
+```
+git checkout master
+```
+
+> ##### Important
+> Make sure you have switched to the `master` branch to use the right .NET solution. 
+
+
+
 ## Working with Azure DevOps
 
 Before you can get started with building pipelines, you need a Azure DevOps (AZDO) account and a team project. You can use an existing AZDO account, or create a new one at [Dev.Azure.Com ](https://dev.zure.com).
@@ -23,7 +35,7 @@ From the available templates select the `ASP.NET Application with containers` te
 
 <img src="images/ASPNETWithContainersVSTSBuildTemplate.png" width="400" />
 
-Under the `Pipeline` properties for the build process, select `Hosted Linux Preview` as the Agent pool:
+Under the `Pipeline` properties for the build process, select `Hosted Ubuntu 1604` as the Agent pool:
 
 <img src="images/BuildProcessVSTS.png" width="600" />
 
@@ -132,7 +144,8 @@ keyvaulturl | https://Containerworkshop.vault.azure.net
 namespace | workshop
 aikey | (empty)
 
-Each of these variable names should be familiar and known to you by now. Set their values (except the `aikey`, which remains empty for now). Some of these will be used later.
+Each of these variable names should be familiar and known to you (except the `aikey`, which remains empty for now). For the key vault related values (e.g. keyvaultclientid), use the values from the [Security Lab](Lab7-Security.md#adding-support-for-azure-key-vault).
+Some of these will be used later.
 
 You can remove the `volumeMounts` and `spec` from the `dep-leaderboardwebapi` deployment, now that the values in it are coming from the pipeline variables and the environment variables. 
 
