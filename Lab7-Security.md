@@ -7,6 +7,23 @@ Goals for this lab:
 - [Store user secrets during development](#usersecrets)
 - [Use Kubernetes Secrets to store Key Vault credentials](#kubernetessecrets)
 
+## <a name="run"></a>Run existing application
+We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `master` branch by using this command 
+
+```
+git checkout master
+```
+
+> ##### Important
+> Make sure you have switched to the `master` branch to use the right .NET solution. 
+> Make sure you have configured 'Docker Desktop' to run Linux containers.
+
+Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to navigate the code and familiarize yourself with the various projects in the solution. You should be able to identify these:
+- `GamingWebApp`, an ASP.NET MVC Core frontend 
+- `Leaderboard.WebAPI`, an ASP.NET Core Web API 
+
+For now, a SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as desribed in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#lab-2---docker-101).
+
 ## Secrets and Docker
 
 You must have noticed that the connection string to the database contains a username and password. The connection string is set in an environment variable that is stored in the `docker-compose.yml` and `gamingwebapp.k8s-static.yaml` file . Even though this file is only relevant during startup when the environment variables are set on containers, these secrets inside running containers are easily accessible when you have access to the host.
@@ -15,6 +32,11 @@ Open a Docker CLI and find a running container on your host. If there aren't any
 
 ```
 docker ps
+```
+If SQL Server is not running, run this command:
+
+```
+docker run -d -p 5433:1433 --env ACCEPT_EULA=Y -e SA_PASSWORD="Pass@word" --env MSSQL_PID=Developer --name sqldocker microsoft/mssql-server-linux
 ```
 
 Inspect SQL Server, which contains the connection string in an environment variable. Use its container ID to inspect it. 
@@ -51,7 +73,7 @@ az keyvault create --name <unique name> --resource-group ContainerWorkshop --ena
 
 Visit the [Azure Portal](https://portal.azure.com) and go to your new Key Vault resource in your resource group. 
 
->Note: Ideally you would place the KeyVault in a separate resource group, as its lifetime should be surpassing that of the container cluster's group. 
+>Note: Ideally you would place the KeyVault in a separate resource group, as its lifetime is likely to exceed that of the container cluster group. 
 
 Take note of the DNS name of the Key Vault in the `Properties` section.
 
@@ -158,11 +180,12 @@ volumes:
   - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID
 ```
 
-Using user secrets is well suited for development scenarios and single host machine. When running in a cluster for production scenarios it is not recommended. Instead you can use Docker Secrets to add secrets to your cluster host machines. 
+Using user secrets is well suited for development scenarios and single host machine. When running in a cluster for production scenarios it is not recommended. Instead you can store 'Secrets' on your cluster host machines. 
 
 ## <a name='kubernetessecrets'></a>(Optional) Using Kubernetes Secrets
 
-You can store the secrets in a secure way in your cluster. The way this is done depends on the type of orchestrator you have. Kubernetes has its own implementation for secrets. In this final step you are going to create three secrets for the Azure Key Vault connection details, so all secrets are securely stored in a combination of the cluster and the Azure Key Vault.
+> This uses a Kubernetes cluster. If you don't have one yet, go to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to see how to create one.
+You can store the secrets in a secure way in your cluster. The way this is done depends on the type of orchestrator you have. Kubernetes has its own implementation for secrets. In this final step you are going to create three secrets for the Azure Key Vault connection details, so all secrets are "securely" stored in a combination of the cluster and the Azure Key Vault.
 
 Open the file `appsettings.secrets.json` and edit the details of the file a Docker CLI and connect to your cluster. 
 Using a command prompt at the folder with the secrets file:
@@ -195,7 +218,7 @@ Redeploy the manifest with:
 kubectl apply -f .\gamingwebapp.k8s-static.yaml
 ```
 
-> Note that the secrets here are only base64 encoded and not protected. You can use Managed Service Identities in Azure to run your nodes in the cluster under a known-identity that has access to the Azure Key Vault. Using this strategy you do not need to maintain any secrets to get access to your Key Vault.
+> Note that the secrets here are only base64 encoded and not protected. You should use [Managed Identities](https://docs.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview) in Azure to run your nodes in the cluster under a known-identity that has access to the Azure Key Vault. Using this strategy you do not need to maintain any secrets to get access to your Key Vault.
 
 ## Wrapup
 
