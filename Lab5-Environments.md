@@ -16,9 +16,8 @@ git checkout master
 
 > ##### Important
 > Make sure you have switched to the `master` branch to use the right .NET solution. 
-
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
-> Make sure you are running on the 'master' branch.
+
 
 Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to navigate the code and familiarize yourself with the various projects in the solution. You should be able to identify these:
 - `GamingWebApp`, an ASP.NET MVC Core frontend 
