@@ -12,7 +12,7 @@ Goals for this lab:
 
 Go to the Azure portal and create a new Application Insights resource in the existing resource group. Once created go to the overview and take note of the AppInsights instrumentation key.
 
-Currently, you cannot create the AppInsights resource from the Azure CLI. It is possible to use Azure Resource Management to automate the provisioning. 
+Currently, you cannot [easily](https://docs.microsoft.com/en-us/cli/azure/ext/application-insights/monitor/app-insights?view=azure-cli-latest) create the AppInsights resource from the Azure CLI. It is possible to use Azure Resource Management (ARM templates) to automate the provisioning. 
 
 ## <a name='configure'></a>Configure gathering of telemetry and monitoring data
 
@@ -46,7 +46,7 @@ https://<cluster-address>/health (Azure hosted)
 
 > ##### Note
 > The implementation for the health diagnostics is located in two projects in the Visual Studio solution. These are based on preview versions made by Microsoft. 
-> In ASP.NET Core 2.2 the diagnostics for health will be included by default. Expect the code to implement health endpoints to be different in the future.
+> In ASP.NET Core 2.2 the diagnostics for health are included by default.
 
 For the semantic logging, you will implement a minimal set of code. Find the constructor of the `LeaderboardController` and add an additional argument:
 ``` C#
