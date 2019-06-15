@@ -107,7 +107,7 @@ docker exec -it <containerid> sh
 
 The last command will give a bash from the container instance whose ID you specified. Run a command `ip a` and check how many ethernet adapters are listed. Verify that it corresponds with your design.
 
-You can also give a container instance an alias, so you can refer to it by a network alias instead of its container service name. Use the fragment below to give the SQL Server instance a network alias `sql.containerworkshop.local`.
+You can also give a container instance an alias, so you can refer to it by a network alias instead of its container service name. Use the fragment below to give the SQL Server instance created in the [previous module](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab3-DockerizingNETCore.md#running-sql-server-in-a-docker-container) a network alias `sql.containerworkshop.local`.
 
 ```
     networks:
