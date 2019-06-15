@@ -17,6 +17,9 @@ git checkout start
 ```
 
 > ##### Important
+
+> If your VS2017 debugger won't start and attach, reset Docker For Windows to factory defaults.
+
 > Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. 
 
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
@@ -25,7 +28,7 @@ Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to na
 - `GamingWebApp`, an ASP.NET MVC Core frontend 
 - `Leaderboard.WebAPI`, an ASP.NET Core Web API 
 
-For now, the SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as desribe in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#lab-2---docker-101). 
+For now, the SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as described in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#running-sql-server-inside-a-container). 
 
 **Important** Update the connectionstring in the appsettings.json file to use the computername instead of localhost or 127.0.0.1. We will need this later. 
 
