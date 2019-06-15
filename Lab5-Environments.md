@@ -38,14 +38,14 @@ version: '3'
 
 services:
   ci-build:
-    image: microsoft/dotnet:2.1-sdk
+    image: microsoft/dotnet:2.2-sdk
     volumes:
       - .:/src
     working_dir: /src
     command: /bin/bash -c "dotnet restore ./ContainerWorkshop.sln && dotnet publish ./ContainerWorkshop.sln -c Release -o ./obj/Docker/publish"
 ```
 
-The definitions in the compose file describe a service called `ci-build` that uses the image `microsoft/dotnet:2.1-sdk` and has a volume mapping to the root of the source code. The command starts a build in the working directory `src`. 
+The definitions in the compose file describe a service called `ci-build` that uses the image `microsoft/dotnet:2.2-sdk` and has a volume mapping to the root of the source code. The command starts a build in the working directory `src`. 
 
 Start this composition by executing the command from the root of the Visual Studio solution where the Docker Compose YAML files are located:
 ```
