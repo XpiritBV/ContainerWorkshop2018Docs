@@ -8,7 +8,7 @@ Goals for this lab:
 - [Working with container images](#working)
 
 ## <a name="inspect"></a>Inspect your Docker environment
-Let's check whether your Docker Community Edition tooling is correctly set up. Also, you might need to get familiar with the Docker tooling.
+Let's check whether your Docker Desktop Community Edition tooling is correctly set up. Also, you might need to get familiar with the Docker tooling.
 
 You should see the Docker tooling running. On Windows, you can check this by looking for a tray icon like this:
 
@@ -36,32 +36,35 @@ Verify that your installation functions correctly. You should get see the curren
 
 Tooling version:
 ```
-Docker version 18.06.1-ce, build e68fc7a
+Docker version 18.09.2, build 6247962
 ```
 
 Client and server information:
 ```
-Client:
- Version:           18.06.1-ce
- API version:       1.38
- Go version:        go1.10.3
- Git commit:        e68fc7a
- Built:             Tue Aug 21 17:21:34 2018
+Client: Docker Engine - Community
+ Version:           18.09.2
+ API version:       1.39
+ Go version:        go1.10.8
+ Git commit:        6247962
+ Built:             Sun Feb 10 04:12:31 2019
  OS/Arch:           windows/amd64
  Experimental:      false
 
-Server:
+Server: Docker Engine - Community
  Engine:
-  Version:          18.06.1-ce
-  API version:      1.38 (minimum version 1.12)
-  Go version:       go1.10.3
-  Git commit:       e68fc7a
-  Built:            Tue Aug 21 17:29:02 2018
+  Version:          18.09.2
+  API version:      1.39 (minimum version 1.12)
+  Go version:       go1.10.6
+  Git commit:       6247962
+  Built:            Sun Feb 10 04:13:06 2019
   OS/Arch:          linux/amd64
-  Experimental:     false   
+  Experimental:     false
+ Kubernetes:
+  Version:          v1.10.11
+  StackAPI:         v1beta2
 ```
 
-If the Engine does not report `OS/Arch linux/amd64` but `windows/amd64` instead, run the following command to switch to Linux:
+If the Engine does not report `OS/Arch` as `linux/amd64` but `windows/amd64` instead, it means that you are running Windows containers at the moment. Run the following command to switch to Linux:
 ```
 "c:\Program Files\Docker\Docker\DockerCli.exe" -SwitchDaemon
 ```
@@ -107,14 +110,14 @@ The last command seems to block. That's okay. Navigate to http://localhost:8090.
 Inspecting the running containers with `docker ps`, you should find that the nginx container is still running.
 
 Next, start a container to run an instance of SQL Server on Linux. 
-The image for SQL Server for Linux is located in the Docker Store, since it is an official image. Navigate to http://store.docker.com and search for SQL Server there. Pull the image when you found its name:
+The image for SQL Server for Linux is located in the Docker Store, since it is an official image. Navigate to https://hub.docker.com and search for SQL Server there. Pull the image when you found its name:
 ```
-docker pull microsoft/mssql-server-linux
+docker pull mcr.microsoft.com/mssql/server:2017-latest-ubuntu
 ```
 
 Use the command:
 ```
-docker run -d -p 5433:1433 --env ACCEPT_EULA=Y -e SA_PASSWORD="Pass@word" --env MSSQL_PID=Developer --name sqldocker microsoft/mssql-server-linux
+docker run -e ACCEPT_EULA=Y -e MSSQL_PID=Developer -e SA_PASSWORD="Pass@word" --name sqldocker -p 5433:1433 -d mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
 ```
 The SQL Server container is started detached, so it will not show any output other than the container ID:
 ```
@@ -122,7 +125,7 @@ The SQL Server container is started detached, so it will not show any output oth
 ```
 You can refer to this container by its ID or its name `sqldocker`. You do not have to specify the entire container ID for commands with the Docker CLI. It is sufficient to provide enough characters from the start to give a unique match. In the example above this would be `7` or `70` or `70e`, depending on the IDs of other containers.
 
-You can still examine the output of the container even though it is detached from the console. Simply run `docker logs <containerid>`, substituting the ID of the container, like so:
+You can still examine the output of the container even though it is detached from the console. Simply run `docker logs <container-id>`, substituting the ID of the container, like so:
 ```
 docker logs 70e
 ```
