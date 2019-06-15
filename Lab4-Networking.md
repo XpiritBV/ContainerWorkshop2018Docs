@@ -115,8 +115,8 @@ You can also give a container instance an alias, so you can refer to it by a net
         aliases:
           - sql.containerworkshop.local
 ```
-
-After defining this alias, change the connection string setting of the `LeaderboardContext` for the Web API to use this new network name.
+## Coming from Lab 3
+Did you work on Lab 3 before this? If so, after defining this alias, change the connection string setting of the `LeaderboardContext` for the Web API to use this new network name.
 
 ## Wrapup
 
