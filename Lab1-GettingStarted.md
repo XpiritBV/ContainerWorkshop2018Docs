@@ -32,6 +32,8 @@ Second, you are going to need the Docker Community Edition tooling on your devel
 You will also need the [Azure Command Line 2.0 tooling](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) for interaction with Azure resources. 
 > Install [Azure CLI 2.0](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli-windows?view=azure-cli-latest)
 
+Download and install [.NET Core 2.2](https://dotnet.microsoft.com/download/dotnet-core/2.2) if needed.
+
 The following optional tools are recommended, but not required.
 
 - [GitHub Desktop](https://desktop.github.com/) for Git Shell and Git repository utilities
