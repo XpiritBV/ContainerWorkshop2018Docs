@@ -68,12 +68,12 @@ You could use this composition in your build pipeline to perform the build and p
 There is also a new way to accomplish the same thing. This way is by using multi-stage builds in the Dockerfile. Instead of running a new composition that spins up a container to build a container, you can create a Dockerfile that uses stages to build your application. As an example look at the following file
 
 ```docker
-FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
+FROM microsoft/dotnet:2.2-aspnetcore-runtime AS base
 WORKDIR /app
 EXPOSE 13995
 EXPOSE 44369
 
-FROM microsoft/dotnet:2.1-sdk AS build
+FROM microsoft/dotnet:2.2-sdk AS build
 WORKDIR /src
 COPY src/Services/Leaderboard.WebAPI/Leaderboard.WebAPI.csproj src/Services/Leaderboard.WebAPI/
 COPY src/Extensions/Microsoft.AspNetCore.HealthChecks/Microsoft.AspNetCore.HealthChecks.csproj src/Extensions/Microsoft.AspNetCore.HealthChecks/
