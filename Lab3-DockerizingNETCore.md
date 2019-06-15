@@ -17,6 +17,9 @@ git checkout start
 ```
 
 > ##### Important
+
+> If your VS2017 debugger won't start and attach, reset Docker For Windows to factory defaults.
+
 > Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. 
 
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
