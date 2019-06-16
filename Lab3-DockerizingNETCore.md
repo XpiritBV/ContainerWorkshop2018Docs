@@ -10,27 +10,26 @@ Goals for this lab:
 - [Running SQL Server in a Docker container](#sql)
 
 ## <a name="run"></a>Run existing application
-We will start with running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `Start` branch by using this command 
+We will start with running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `Start` branch by using this command:
 
-```
+```cmd
 git checkout start
 ```
 
 > ##### Important
-
-> If your VS2017 debugger won't start and attach, reset Docker For Windows to factory defaults.
-
-> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. 
+> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution.
 
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
 
 Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to navigate the code and familiarize yourself with the various projects in the solution. You should be able to identify these:
+
 - `GamingWebApp`, an ASP.NET MVC Core frontend 
-- `Leaderboard.WebAPI`, an ASP.NET Core Web API 
+- `Leaderboard.WebAPI`, an ASP.NET Core Web API
 
-For now, the SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as described in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#running-sql-server-inside-a-container). 
+For now, the SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as described in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#lab-2---docker-101).
 
-**Important** Update the connectionstring in the appsettings.json file to use the computername instead of localhost or 127.0.0.1. We will need this later. 
+> ##### Important
+> Update the connectionstring in the appsettings.json file to use the computername instead of localhost or 127.0.0.1. We will need this later. 
 
 ```json
 {
@@ -41,7 +40,7 @@ For now, the SQL Server for Linux container instance is providing the developer 
 
 Then start the container, if you did not already do this.
 ```
-docker run -d -p 5433:1433 --env ACCEPT_EULA=Y -e SA_PASSWORD="Pass@word" --env MSSQL_PID=Developer --name sqldocker mcr.microsoft.com/mssql/server
+docker run -e ACCEPT_EULA=Y -e MSSQL_PID=Developer -e SA_PASSWORD="Pass@word" --name sqldocker -p 5433:1433 -d mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
 ```
 
 Right-click both the GamingWebApp and Leaderboard.WebAPI and start to debug a new instance.
@@ -52,9 +51,9 @@ Next, navigate to the Web API endpoint at http://localhost:44369/swagger. Experi
 
 Make sure you know how this application is implemented. Set breakpoints if necessary and navigate the flow of the application for the home page.
 
-## <a name="add"></a>Add Docker support 
+## <a name="add"></a>Add Docker support
 
-Visual Studio 2017 offers tooling for adding support to run your application in a Docker container. You will first add container support to the Web API project. 
+Visual Studio offers tooling for adding support to run your application in a Docker container. You will first add container support to the Web API project.
 
 To get started you can right-click the Leaderboard.WebAPI project and select Add, Container Orchestrator Support from the context menu. Choose `Docker Compose` as the local orchestrator from the dropdown.
 
@@ -72,9 +71,9 @@ Inspect the contents of the `docker-compose.yml` and `docker-compose.override.ym
 
 Repeat adding Docker support for the Web application project. More changes will be made to the YAML files.
 
-Run your application again. Which projects are effectively started? If some project is not running, start it by choosing `Debug` > `Start new instance` from the right-click context menu of the project. 
+Run your application again. Which projects are effectively started? If some project is not running, start it by choosing `Debug` > `Start new instance` from the right-click context menu of the project.
 
-> If you encounter the error 'The DOCKER_REGISTRY variable is not set. Defaulting to a blank string.', make sure you started VIsual Studio as an administrator
+> If you encounter the error 'The DOCKER_REGISTRY variable is not set. Defaulting to a blank string.', make sure you started Visual Studio as an administrator
 
 > Does the application still work?
 
@@ -95,11 +94,11 @@ ports:
 
 > You will learn more on networking later on. For now, notice that the URL is not referring to `localhost` but `leaderboardwebapi` (the name of the Docker container service as defined in the `docker-compose.yml` file).
 
-Change the `LeaderboardWebApiBaseUrl` setting to point to the new endpoint of the Web API with the internal address `http://leaderboard.webapi`. 
+Change the `LeaderboardWebApiBaseUrl` setting to point to the new endpoint of the Web API with the internal address `http://leaderboard.webapi`.
 
-> Make sure you use the HTTP endpoint, because hosting an HTTPS endpoint with self-signed certificates in a cluster does not work by default. 
+> Make sure you use the HTTP endpoint, because hosting an HTTPS endpoint with self-signed certificates in a cluster does not work by default.
 
-Choose the right place to make that change, considering that you are now running from Docker containers. 
+Choose the right place to make that change, considering that you are now running from Docker containers.
   
 > ##### Hint
 > Changing the setting in the `appsettings.json` file will work and you could choose to do so for now. It does mean that the setting for running without container will not work anymore. So, what other place can you think of that might work? Use that instead if you know, or just change `appsettings.json`.
@@ -170,7 +169,7 @@ Start a command prompt and use the Docker CLI to check which container instances
 where `<id>` is a random unique integer value.
 
 > ##### New container images
-> Which new container images are on your system at the moment? Check your images list with the Docker CLI
+> Which new container images are on your system at the moment? Check your images list with the Docker CLI.
 
 Stop your application if necessary. Verify that any container instances of the Web application or Web API are actually stopped. If not, stop them by executing the following command for each of the container instances:
 
@@ -183,18 +182,21 @@ docker kill <container-id>
 *Note that you can get the same result by performing running `Clean solution` from the `Build` menu in Visual Studio.*
 
 Now, try and run the Web application image yourself. Start a container instance.
-```
+
+```cmd
 docker run -p 8080:80 -it --name webapp gamingwebapp:dev
 ```
+
 Check whether the web application is working. It shouldn't work and you'll find that it brings you in a bash shell on Linux.
-```
+
+```cmd
 root@65e40486ab0f:/app#
 ```
 
 Your container image does not contain any of the binaries that make your ASP.NET Core Web application run. Visual Studio uses volume mapping to map the files on your file system into the running container, so it can detect any changes thereby allowing small edits during debug sessions.
 
 > ##### Debug images from Visual Studio
-> Remember that Visual Studio creates Debug images that do not work when run from the Docker CLI. 
+> Remember that Visual Studio creates Debug images that do not work when run from the Docker CLI.
 
 > ##### Asking for help
 > Remember that you can ask your proctor for help. Also, working with fellow attendees is highly recommended, as it can be fun and might be faster. Of course, you are free to offer help when asked.

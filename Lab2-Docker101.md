@@ -16,7 +16,7 @@ You should see the Docker tooling running. On Windows, you can check this by loo
 
 If you cannot find the Docker icon in the tray, you might need to start the Docker tooling:
 
-```
+```cmd
 C:\Program Files\Docker\Docker\Docker for Windows.exe
 ```
 
@@ -26,7 +26,7 @@ After starting the Docker tooling you should see the following dialog:
 
 Start a Developer Command Prompt and run the following commands:
 
-```
+```cmd
 docker --version
 docker version
 docker info
@@ -108,8 +108,6 @@ docker run -it --name docker-nginx -p 8090:80 nginx
 
 The last command seems to block. That's okay. Navigate to http://localhost:8090. You will notice that the output of the nginx container is now filling the console. The prompt is missing. This is because you are now attached to the container. To detach use the key combination `Ctrl+P, Ctrl+Q` to detach from the container and return to the prompt.
 Inspecting the running containers with `docker ps`, you should find that the nginx container is still running.
-
-## <a name="sql"></a>Running SQL Server inside a container
 
 Next, start a container to run an instance of SQL Server on Linux. 
 The image for SQL Server for Linux is located in the Docker Store, since it is an official image. Navigate to https://hub.docker.com and search for SQL Server there. Pull the image when you found its name:
