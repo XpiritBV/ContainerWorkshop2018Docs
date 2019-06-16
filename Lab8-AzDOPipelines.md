@@ -6,23 +6,22 @@ Goals for this lab:
 - Deploy images to cluster
 
 ## <a name="run"></a>Get existing application
-We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `master` branch by using this command 
+We will start with or continue running the existing ASP.NET Core application from Visual Studio. Make sure you have cloned the Git repository, or return to [Lab 1 - Getting Started](Lab1-GettingStarted.md) to clone it now if you do not have the sources. Switch to the `master` branch by using this command :
 
 ```
 git checkout master
 ```
 
 > ##### Important
-> Make sure you have switched to the `master` branch to use the right .NET solution. 
-
-
+> Make sure you have switched to the `master` branch to use the right .NET solution.
 
 ## Working with Azure DevOps
 
-Before you can get started with building pipelines, you need a Azure DevOps (AZDO) account and a team project. You can use an existing AZDO account, or create a new one at [Dev.Azure.Com ](https://dev.zure.com).
+Before you can get started with building pipelines, you need a Azure DevOps (AZDO) account and a team project. You can use an existing AZDO account, or create a new one at [dev.azure.Com ](https://dev.azure.com).
 
-Also, your cloned Git repository needs to be pushed to the AZDO project. Assuming you have your current work branch checked out, you can change the URL for the origin to point to the Git repo in your Team Project.
-```
+Also, your cloned Git repository needs to be pushed to the AzDO project. Assuming you have your current work branch checked out, you can change the URL for the origin to point to the Git repo in your Team Project.
+
+```cmd
 git remote set-url origin https://dev.azure.com/<your-vsts-account>/<your-teamproject>/_git/containerworkshop
 git push -u origin --all
 ```
@@ -42,9 +41,10 @@ Under the `Pipeline` properties for the build process, select `Hosted Ubuntu 160
 Inspect the tasks in the pipeline. You can see that there are three tasks related to building the source code. Additionally, there are tasks for creating container images, and pushing these to your registry. The final two steps will place build items in a staging directory and publish these as part of the build artifacts.
 
 Remove the first 3 tasks from the pipeline, as those are meant for ASP.NET, not ASP.NET Core. You will build your application code using containers with the Docker composition file.
-Add a new `Docker Compose` task and name it `Compile assemblies`. 
+Add a new `Docker Compose` task and name it `Compile assemblies`.
 
 Click the little exclamation mark next to the properties:
+
 - Container Registry Type
 - Azure subscription
 - Azure Container Registry
@@ -58,18 +58,18 @@ Select the pipeline at the top again to fill in all linked properties, as descri
 
 Notice that this template assumes that you will use an Azure Container Registry. You can use one if you created it before. If not, refer back to [Lab 6](Lab6-RegistriesClusters.md) to read how to create the container registry.
 
-You need to create a connection between Azure DevOps and your Azure subscription. Open the details of the first task, locate the property for the `Azure subscription` and add your subscription details. 
+You need to create a connection between Azure DevOps and your Azure subscription. Open the details of the first task, locate the property for the `Azure subscription` and add your subscription details.
 
 <img src="images/NewVSTSConnection.png" width="600" />
 
-After the registration of your subscription is completed, 
-select your container registry from the dropdown below. 
+After the registration of your subscription is completed, select your container registry from the dropdown below.
 
 Notice how the Docker Compose file is already preselected to be `docker-compose.yml`. This aligns with the previous design decision to only include actual images relevant to the application components to be in this Docker Compose file.
 
 Further down, specify an environment variable for the registry, so the created images have the correct fully qualified name:
-```
-DOCKER_REGISTRY=<your-registry>.azurecr.io/
+
+```cmd
+DOCKER_REGISTRY=<registry>.azurecr.io/
 ```
 
 You can specify additional Docker Compose files. Remove the reference to file `docker-compose.ci.yml` from the other three Docker Compose tasks.
@@ -85,7 +85,8 @@ In the `Copy Files` task set the `Contents` property to this file:
 In the last task for `Publish Artifacts`, specify `artifacts` as the Artifact name.
 
 Save the build definition and queue a new build. Check whether the build completes successfully and fix any errors that might occur. Inspect the build artifacts, notice that there are 2 artifacts there, the Kubernetes manifest and a modified Docker compose file. Download the `docker-compose.yml` file and open it. It should resemble this:
-```
+
+```yaml
 services:
   gamingwebapp:
     build:
@@ -108,9 +109,9 @@ If this all is working correctly you are ready to release the new image to the c
 
 ## Release new images to cluster
 
-With the Docker images located in the registry, you can release these to your cluster by instructing it deploy the composition defined in the Kubernetes manifest file. This file `gamingwebapp.k8s-dep.yaml` is now part of the build artifacts. This file contains various tokens that need to be replaced by actual values, such as the build ID and sensitive data. 
+With the Docker images located in the registry, you can release these to your cluster by instructing it deploy the composition defined in the Kubernetes manifest file. This file `gamingwebapp.k8s-dep.yaml` is now part of the build artifacts. This file contains various tokens that need to be replaced by actual values, such as the build ID and sensitive data.
 
-Create a new release definition from the Releases tab in AZDO. Choose an `Deploy to a Kubernetes cluster` and name the first stage `Production`. 
+Create a new release definition from the Releases tab in AZDO. Choose an `Deploy to a Kubernetes cluster` and name the first stage `Production`.
 Add a new artifact and select the previously made pipeline as the `Source`.
 
 Select the tasks in the Production environment from the link `1 job, 1 task` link. Navigate to its empty task list and set the Agent selection to `Hosted VS2017` under the Agent job.
