@@ -17,9 +17,11 @@ git checkout start
 ```
 
 > ##### Important
-> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution.
+
+> Make sure you have switched to the `start` branch to use the right .NET solution. If you are still on the `master` branch, you will use the completed solution. 
 
 > Make sure you have configured 'Docker Desktop' to run Linux containers.
+> If your VS2017 debugger won't start and attach, reset 'Docker Desktop' to its factory defaults and recreate network shares by using the settings screen.
 
 Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to navigate the code and familiarize yourself with the various projects in the solution. You should be able to identify these:
 

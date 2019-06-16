@@ -24,15 +24,6 @@ Open the solution `ContainerWorkshop.sln` in Visual Studio. Take your time to na
 
 For now, a SQL Server for Linux container instance is providing the developer backend for data storage. This will be changed later on. Make sure you run the SQL Server as described in [Lab 2](https://github.com/XpiritBV/ContainerWorkshop2018Docs/blob/master/Lab2-Docker101.md#lab-2---docker-101).
 
-**Important** Update the connectionstring in the appsettings.json file to use the computername instead of localhost or 127.0.0.1. We will need this later. 
-
-```json
-{
-  "ConnectionStrings": {
-    "LeaderboardContext": "Server=tcp:machinename,5433;Database=Leaderboard;User Id=sa;Password=Pass@word;Trusted_Connection=False;"
-  }
-```
-
 ## <a name="work"></a>Working with compositions and Docker Compose
 
 Compositions are essential to manage the many different combinations of containers, images, run-time details and environmental settings. Typically an application consists of multiple running containers. Managing each of these individually is both difficult and labor intensive. Moreover, it does not define the relationships and dependencies that exist.
