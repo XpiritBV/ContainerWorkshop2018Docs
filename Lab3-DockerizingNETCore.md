@@ -42,7 +42,7 @@ For now, the SQL Server for Linux container instance is providing the developer 
 
 Then start the container, if you did not already do this.
 ```
-docker run -e ACCEPT_EULA=Y -e MSSQL_PID=Developer -e SA_PASSWORD="Pass@word" --name sqldocker -p 5433:1433 -d mcr.microsoft.com/mssql/server:2017-CU8-ubuntu
+docker run -e ACCEPT_EULA=Y -e MSSQL_PID=Developer -e SA_PASSWORD="Pass@word" --name sqldocker -p 5433:1433 -d mcr.microsoft.com/mssql/server
 ```
 
 Right-click both the GamingWebApp and Leaderboard.WebAPI and start to debug a new instance.
