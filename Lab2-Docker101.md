@@ -106,7 +106,7 @@ docker pull nginx
 docker run -it --name docker-nginx -p 8090:80 nginx
 ```
 
-The last command seems to block. That's okay. Navigate to http://localhost:8090. You will notice that the output of the nginx container is now filling the console. The prompt is missing. This is because you are now attached to the container. To detach use the key combination `Ctrl+P, Ctrl+Q` to detach from the container and return to the prompt.
+The last command seems to block. That's okay. Navigate to http://localhost:8090. You will notice that the output of the nginx container is now filling the console. The prompt is missing. This is because you are now attached to the container. To detach use the key combination `Ctrl+P,Q` to detach from the container and return to the prompt.
 Inspecting the running containers with `docker ps`, you should find that the nginx container is still running.
 
 Next, start a container to run an instance of SQL Server on Linux. 
